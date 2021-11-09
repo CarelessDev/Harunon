@@ -1,0 +1,4 @@
+discord
+youtube_dl
+python-dotenv
+asyncpraw

@@ -1,0 +1,8 @@
+##################################
+-communistify  img 
+-set leader
+-slash command
+-add/ subtract social credit
+-text pattern detection
+-play red sun in the sky
+-commie sound
