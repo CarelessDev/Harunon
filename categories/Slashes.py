@@ -20,7 +20,7 @@ class Slash(commands.Cog):
 
 
     @cog_ext.cog_slash(name="guild",description="get guild", guild_ids=guild_ids)
-    async def _hello(self, ctx:SlashContext):
+    async def _guild(self, ctx:SlashContext):
         guilds = self.bot.guilds
         #ids = [guild.id for guild in guilds]
         await ctx.send(str(guilds))
@@ -29,3 +29,25 @@ class Slash(commands.Cog):
     async def _clear(self, ctx:SlashContext):
         await ctx.send("comencing self destruct")
         await ctx.channel.purge(limit=3)
+
+
+    @cog_ext.cog_slash(name="ASE",description="african s energy", guild_ids=guild_ids,
+            options=[create_option(name='option',
+                                    description='nigga',
+                                    required=True,
+                                    option_type=3,
+                                    choices=[create_choice(name="yes",value="ชังชาติ"),
+                                             create_choice(name="no", value="nigga")]
+                                             )])
+    async def _ase(self, ctx:SlashContext, option:str):
+        await ctx.send(option)
+
+    @cog_ext.cog_slash(name="test",description="testing", guild_ids=guild_ids,
+            options=[create_option(name='hi',
+                                    description='num',
+                                    option_type=10,
+                                    required=False)])
+
+    async def _test(self, ctx:SlashContext, option:str):
+        print()
+        #await ctx.send(option)
