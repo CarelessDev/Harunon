@@ -1,10 +1,11 @@
-import os, json
+import os
+import json
 import discord
 from discord_slash import SlashCommand
 from discord.ext import commands, tasks
 from dotenv import load_dotenv
 from random import choice
-from categories.Cate1 import Social_credit
+from categories.Cate1 import Haru
 from categories.Slashes import Slash
 from categories.Cate2 import on_hold
 from categories.Voiceslash import Music
@@ -19,25 +20,20 @@ if __name__ == "__main__":
     TOKEN = os.getenv('DISCORD_TOKEN')
 
     bot = commands.Bot(command_prefix=commands.when_mentioned_or('Haru '))
-    slash = SlashCommand(bot, sync_commands = True)
-
+    slash = SlashCommand(bot, sync_commands=True)
 
     def setup(bot):
         bot.add_cog(Music(bot))
-        bot.add_cog(Social_credit(bot))
+        bot.add_cog(Haru(bot))
         bot.add_cog(on_hold(bot))
         bot.add_cog(Slash(bot))
 
-
-    
     setup(bot)
-
 
     @bot.event
     async def on_ready():
         print('join us')
         change_status.start()
-
 
     @tasks.loop(seconds=300)
     async def change_status():
@@ -45,6 +41,5 @@ if __name__ == "__main__":
         activity: discord.Activity = discord.Activity(
             type=discord.ActivityType.listening, name=status)
         await bot.change_presence(activity=activity)
-
 
     bot.run(TOKEN)

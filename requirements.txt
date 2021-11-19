@@ -1,4 +1,4 @@
 discord
 youtube_dl
 python-dotenv
-asyncpraw
+discord-py-slash-command

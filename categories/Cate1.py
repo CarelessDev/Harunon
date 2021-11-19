@@ -2,8 +2,6 @@ from discord.ext import commands
 import discord
 
 
-
-
 class Haru(commands.Cog):
     """oregairu best oneechan"""
 
@@ -12,4 +10,3 @@ class Haru(commands.Cog):
 
     async def cog_command_error(self, ctx: commands.Context, error: commands.CommandError):
         await ctx.send('An error occurred: {}'.format(str(error)))
-    

@@ -1,5 +1,6 @@
 from discord.ext import commands
 
+
 class on_hold(commands.Cog):
     """cumming soon"""
 
@@ -8,7 +9,6 @@ class on_hold(commands.Cog):
 
     async def cog_command_error(self, ctx: commands.Context, error: commands.CommandError):
         await ctx.send('An error occurred: {}'.format(str(error)))
-    
 
     @commands.command(name='none')
     async def on_hold(self, ctx):
