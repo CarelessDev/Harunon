@@ -7,7 +7,7 @@ from random import choice
 from categories.Cate1 import Social_credit
 from categories.Slashes import Slash
 from categories.Cate2 import on_hold
-
+from categories.Voiceslash import Music
 
 with open("words.json") as f:
     data = json.load(f)
@@ -18,11 +18,12 @@ if __name__ == "__main__":
 
     TOKEN = os.getenv('DISCORD_TOKEN')
 
-    bot = commands.Bot(command_prefix=commands.when_mentioned_or('Jek '))
+    bot = commands.Bot(command_prefix=commands.when_mentioned_or('Haru '))
     slash = SlashCommand(bot, sync_commands = True)
 
 
     def setup(bot):
+        bot.add_cog(Music(bot))
         bot.add_cog(Social_credit(bot))
         bot.add_cog(on_hold(bot))
         bot.add_cog(Slash(bot))
