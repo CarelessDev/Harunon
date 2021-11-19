@@ -14,6 +14,6 @@ class on_hold(commands.Cog):
     async def on_hold(self, ctx):
         """探しに行くんだ そこへ"""
         file_name = "./歌詞/春擬き.txt"
-        with open(file_name, "rb") as f:
+        with open(file_name, "r") as f:
             for x in f:
                 await ctx.send(x)

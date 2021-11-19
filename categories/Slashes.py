@@ -48,7 +48,7 @@ class Slash(commands.Cog):
         await ctx.send("comencing self destruct")
         await ctx.channel.purge(limit=int(clear_amount) + 1)
 
-    @cog_ext.cog_slash(name="blep", description="Wtf command in this", guild_ids=guild_ids,
+    @cog_ext.cog_slash(name="blep", description="Wtf command is this", guild_ids=guild_ids,
                        options=[create_option(name="person",
                                               description="Who you want to B L E P",
                                               required=True,
