@@ -19,7 +19,7 @@ if __name__ == "__main__":
 
     TOKEN = os.getenv('DISCORD_TOKEN')
 
-    bot = commands.Bot(command_prefix=commands.when_mentioned_or('Haru '))
+    bot = commands.Bot(command_prefix=commands.when_mentioned_or('haru '))
     slash = SlashCommand(bot, sync_commands=True)
 
     def setup(bot):

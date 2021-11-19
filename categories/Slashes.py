@@ -40,7 +40,7 @@ class Slash(commands.Cog):
     async def _ase(self, ctx: SlashContext, option: str):
         await ctx.send(option)
 
-    @cog_ext.cog_slash(name="clear", description="clear message", guild_ids=guild_ids,
+    @cog_ext.cog_slash(name="clearmsg", description="clear message", guild_ids=guild_ids,
                        options=[create_option(name='clear_amount',
                                               description='how many you want gone',
                                               option_type=10,
