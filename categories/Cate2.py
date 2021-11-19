@@ -8,12 +8,12 @@ class on_hold(commands.Cog):
         self.bot = bot
 
     async def cog_command_error(self, ctx: commands.Context, error: commands.CommandError):
-        await ctx.send('An error occurred: {}'.format(str(error)))
+        await ctx.send("An error occurred: {}".format(str(error)))
 
-    @commands.command(name='none')
+    @commands.command(name="harumodoki")
     async def on_hold(self, ctx):
-        """ introduction"""
-        file_name = "./Lyr.txt"
-        with open(file_name, 'rb') as f:
+        """探しに行くんだ そこへ"""
+        file_name = "./歌詞/春擬き.txt"
+        with open(file_name, "rb") as f:
             for x in f:
                 await ctx.send(x)

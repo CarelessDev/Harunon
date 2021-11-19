@@ -17,9 +17,9 @@ with open("words.json") as f:
 if __name__ == "__main__":
     load_dotenv()
 
-    TOKEN = os.getenv('DISCORD_TOKEN')
+    TOKEN = os.getenv("DISCORD_TOKEN")
 
-    bot = commands.Bot(command_prefix=commands.when_mentioned_or('haru '))
+    bot = commands.Bot(command_prefix=commands.when_mentioned_or("haru "))
     slash = SlashCommand(bot, sync_commands=True)
 
     def setup(bot):
@@ -32,7 +32,7 @@ if __name__ == "__main__":
 
     @bot.event
     async def on_ready():
-        print('join us')
+        print(f"はるのん Ready! Logged in as {bot.user.name}")
         change_status.start()
 
     @tasks.loop(seconds=300)
