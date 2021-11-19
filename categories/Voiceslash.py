@@ -192,10 +192,11 @@ class Song:
         self.requester = source.requester
 
     def create_embed(self, words="Now playing"):
-        embed = (discord.Embed(title=words, description="```css\n{0.source.title}\n```".format(self), color=0x66ff99)  # discord.Color.blurple())
+        embed = (discord.Embed(title=words, description="```css\n{0.source.title}\n```".format(self), color=0x5a3844)
                  .add_field(name="Duration", value=self.source.duration)
                  .add_field(name="Requested by", value=self.requester.mention)
                  .add_field(name="Uploader", value="[{0.source.uploader}]({0.source.uploader_url})".format(self))
+                 .add_field(name="Liked by", value='{0.source.likes}'.format(self))
                  .add_field(name="URL", value="[Click]({0.source.url})".format(self))
                  .set_thumbnail(url=self.source.thumbnail)
                  .set_author(name=self.requester.name, icon_url=self.requester.avatar_url))
