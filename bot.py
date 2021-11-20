@@ -5,10 +5,10 @@ from discord_slash import SlashCommand
 from discord.ext import commands, tasks
 from dotenv import load_dotenv
 from random import choice
-from categories.Cate1 import Haru
-from categories.Slashes import Slash
-from categories.Cate2 import on_hold
-from categories.Voiceslash import Music
+from cogs.Haru import Haru
+from cogs.Slashes import Slash
+from cogs.Kashi import Kashi
+from cogs.Voiceslash import Music
 
 with open("data.json") as f:
     data = json.load(f)
@@ -25,7 +25,7 @@ if __name__ == "__main__":
     def setup(bot):
         bot.add_cog(Music(bot))
         bot.add_cog(Haru(bot))
-        bot.add_cog(on_hold(bot))
+        bot.add_cog(Kashi(bot))
         bot.add_cog(Slash(bot))
 
     setup(bot)

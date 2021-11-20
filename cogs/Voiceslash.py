@@ -11,11 +11,7 @@ import functools
 import asyncio
 import math
 from random import choice
-
-load_dotenv()
-
-
-guild_ids = [int(id) for id in os.getenv('guild_ids').split(',')]
+from utils.env import guild_ids
 
 with open("./data.json", "r") as f:
     data = json.load(f)
@@ -261,7 +257,7 @@ class Music(commands.Cog):
     @cog_ext.cog_slash(name="queue", description="Show the Queue", guild_ids=guild_ids)
     async def _queue(self, ctx: SlashContext):
         if not self.queues[self.server_id]:
-            return await ctx.send("Empty queue.")
+            return await ctx.send("残念ですから Queue is current empty.")
         page = 1
         items_per_page = 10
         pages = math.ceil(len(self.queues[self.server_id]) / items_per_page)
@@ -271,12 +267,14 @@ class Music(commands.Cog):
 
         queue = ""
         for i, song in enumerate(self.queues[self.server_id][start:end], start=start):
-            queue += "`{0}.` [**{1.title}**]({1.url})\n".format(
-                i + 1, song)
+            queue += "`{0}.` [**{1.title}**]({1.url}){2}\n".format(
+                i + 1, song,
+                " <<< Now Playing" if i == 0 else ""
+            )
 
         embed = (
             discord.Embed(
-                description="**{} tracks:**\n\n{}".format(
+                description="**{} song in queues:**\n\n{}".format(
                     len(self.queues[self.server_id]), queue)
             )
             .set_footer(text="Viewing page {}/{}".format(page, pages)))
@@ -286,14 +284,14 @@ class Music(commands.Cog):
     async def _loop_queue(self, ctx: SlashContext):
         if self.loop == False:
             self.loop = True
-            await ctx.send("Queue loop == True")
+            await ctx.send("ループしま～す!")
         else:
             self.loop = False
-            await ctx.send("loop now False")
+            await ctx.send("ループしません")
 
-    @cog_ext.cog_slash(name="play", description="play music", guild_ids=guild_ids,
+    @cog_ext.cog_slash(name="play", description="Play some Music", guild_ids=guild_ids,
                        options=[create_option(name="song",
-                                              description="song name",
+                                              description="Song Name",
                                               required=True,
                                               option_type=3)])
     async def _play(self, ctx: SlashContext, *, song: str):
@@ -315,9 +313,9 @@ class Music(commands.Cog):
         song = Song(source)
         await ctx.send(embed=song.create_embed("enqueued"))
 
-    @cog_ext.cog_slash(name="remove", description="remove song from queue", guild_ids=guild_ids,
+    @cog_ext.cog_slash(name="remove", description="Remove Song from Queue", guild_ids=guild_ids,
                        options=[create_option(name="index",
-                                              description="song index",
+                                              description="Song Index to remove",
                                               required=True,
                                               option_type=10)])
     async def _remove(self, ctx: SlashContext, index: int):
@@ -326,17 +324,15 @@ class Music(commands.Cog):
 
             if not self.loop:
                 ctx.voice_client.stop()
-            await ctx.send("remove {1} [**{0.title}**](<{0.url}>) ✅".format(self.queues[self.server_id].pop(index - 1), index))
-
-            # await ctx.send(f"{index} ")
+            await ctx.send("Removed {1} [**{0.title}**](<{0.url}>) 成功! ✅".format(self.queues[self.server_id].pop(index - 1), index))
         else:
-            return await ctx.send("Empty queue.")
+            return await ctx.send("Queue is already empty!")
 
-    @cog_ext.cog_slash(name="now", description="show current song", guild_ids=guild_ids)
+    @cog_ext.cog_slash(name="now", description="Show Current Song", guild_ids=guild_ids)
     async def _now(self, ctx: commands.Context):
         await ctx.send(embed=Song(ctx.voice_client.source).create_embed())
 
-    @cog_ext.cog_slash(name="clear", description="clear queue", guild_ids=guild_ids)
+    @cog_ext.cog_slash(name="clear", description="Clear the Queue", guild_ids=guild_ids)
     async def _now(self, ctx: commands.Context):
         self.queues[self.server_id] = []
-        await ctx.send("Queue cleared!")
+        await ctx.send("Queue cleared! 成功! ✅")

@@ -9,12 +9,7 @@ import os
 from dotenv import load_dotenv
 import json
 from random import shuffle
-
-
-load_dotenv()
-
-
-guild_ids = [int(id) for id in os.getenv("guild_ids").split(",")]
+from utils.env import guild_ids
 
 
 class Slash(commands.Cog):
@@ -32,17 +27,6 @@ class Slash(commands.Cog):
         guilds = self.bot.guilds
         await ctx.send(str(guilds))
 
-    @cog_ext.cog_slash(name="ase", description="african s energy", guild_ids=guild_ids,
-                       options=[create_option(name="option",
-                                              description="nigga",
-                                              required=True,
-                                              option_type=3,
-                                              choices=[create_choice(name="yes", value="ชังชาติ"),
-                                                       create_choice(name="no", value="nigga")]
-                                              )])
-    async def _ase(self, ctx: SlashContext, option: str):
-        await ctx.send(option)
-
     @cog_ext.cog_slash(name="clearmsg", description="Clear All Message", guild_ids=guild_ids,
                        options=[create_option(name="clear_amount",
                                               description="How many messages to Purge",
@@ -59,14 +43,13 @@ class Slash(commands.Cog):
                                               option_type=6,
                                               )])
     async def _blep(self, ctx: SlashContext, person: str):
-        # print(dir(person))
         await ctx.send(str(person.avatar_url))
 
     @cog_ext.cog_slash(name="emoji", description="Send some Emoji!", guild_ids=guild_ids,
                        options=[
                            create_option(
                                name="emoji_name",
-                               description="Emoji to Echo ~~act 3!~~",
+                               description="Emoji to Echo ACT 3!",
                                required=True,
                                option_type=discord_slash.SlashCommandOptionType.STRING,
                            )
