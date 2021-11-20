@@ -17,7 +17,7 @@ load_dotenv()
 
 guild_ids = [int(id) for id in os.getenv('guild_ids').split(',')]
 
-with open("./words.json", "r") as f:
+with open("./data.json", "r") as f:
     data = json.load(f)
 
 # Silence useless bug reports messages
