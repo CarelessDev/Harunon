@@ -8,7 +8,7 @@ from random import choice
 from cogs.Haru import Haru
 from cogs.Slashes import Slash
 from cogs.Kashi import Kashi
-from cogs.Voiceslash import Music
+from cogs.VoiceSlashes import Music
 from utils.data import data
 
 

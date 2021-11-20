@@ -284,11 +284,17 @@ class Music(commands.Cog):
             self.loop = False
             await ctx.send("ループしません")
 
-    @cog_ext.cog_slash(name="play", description="Play some Music", guild_ids=guild_ids,
-                       options=[create_option(name="song",
-                                              description="Song Name",
-                                              required=True,
-                                              option_type=3)])
+    @cog_ext.cog_slash(
+        name="play", description="Play some Music", guild_ids=guild_ids,
+        options=[
+            create_option(
+                name="song",
+                description="Song Name",
+                required=True,
+                option_type=3
+            )
+        ]
+    )
     async def _play(self, ctx: SlashContext, *, song: str):
         if not ctx.voice_client:
             channel = ctx.author.voice.channel
@@ -308,11 +314,17 @@ class Music(commands.Cog):
         song = Song(source)
         await ctx.send(embed=song.create_embed("enqueued"))
 
-    @cog_ext.cog_slash(name="remove", description="Remove Song from Queue", guild_ids=guild_ids,
-                       options=[create_option(name="index",
-                                              description="Song Index to remove",
-                                              required=True,
-                                              option_type=10)])
+    @cog_ext.cog_slash(
+        name="remove", description="Remove Song from Queue", guild_ids=guild_ids,
+        options=[
+            create_option(
+                name="index",
+                description="Song Index to remove",
+                required=True,
+                option_type=10
+            )
+        ]
+    )
     async def _remove(self, ctx: SlashContext, index: int):
         if self.queues[self.server_id] != []:
             index = min(max(index, -1), len(self.queues[self.server_id]))
