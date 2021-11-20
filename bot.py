@@ -36,8 +36,9 @@ if __name__ == "__main__":
     @tasks.loop(seconds=300)
     async def change_status():
         status: str = choice(data["activities"])
-        activity: discord.Activity = discord.Activity(
-            type=discord.ActivityType.listening, name=status)
+        activity = discord.Activity(
+            type=discord.ActivityType.listening, name=status
+        )
         await bot.change_presence(activity=activity)
 
     bot.run(TOKEN)
