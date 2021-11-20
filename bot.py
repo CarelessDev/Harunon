@@ -9,9 +9,7 @@ from cogs.Haru import Haru
 from cogs.Slashes import Slash
 from cogs.Kashi import Kashi
 from cogs.Voiceslash import Music
-
-with open("data.json") as f:
-    data = json.load(f)
+from utils.data import data
 
 
 if __name__ == "__main__":

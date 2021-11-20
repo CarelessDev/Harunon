@@ -1,20 +1,14 @@
-from discord_slash import SlashContext, cog_ext, ComponentContext
-from discord_slash.utils.manage_commands import create_choice, create_option
+from discord_slash import SlashContext, cog_ext
+from discord_slash.utils.manage_commands import create_option
 import discord
 from discord.ext import commands
-from dotenv import load_dotenv
-import json
-import os
 import youtube_dl
 import asyncio
 import functools
 import asyncio
 import math
-from random import choice
 from utils.env import guild_ids
 
-with open("./data.json", "r") as f:
-    data = json.load(f)
 
 # Silence useless bug reports messages
 youtube_dl.utils.bug_reports_message = lambda: ''

@@ -1,15 +1,11 @@
-from discord_slash import SlashContext, cog_ext, ComponentContext
+from discord_slash import SlashContext, cog_ext
 import discord_slash
-from discord_slash.utils.manage_commands import create_choice, create_option
-from discord_slash.utils.manage_components import create_select, create_select_option, create_button, create_actionrow, wait_for_component
-from discord_slash.model import ButtonStyle
+from discord_slash.utils.manage_commands import create_option
 from discord.ext import commands
 import discord
-import os
-from dotenv import load_dotenv
-import json
-from random import shuffle
+from random import choice
 from utils.env import guild_ids
+from utils.data import data
 
 
 class Slash(commands.Cog):
@@ -56,3 +52,7 @@ class Slash(commands.Cog):
                        ])
     async def emoji_echo(self, ctx: SlashContext, emoji_name: str):
         await ctx.send(str(self.get_emoji(emoji_name)))
+
+    @cog_ext.cog_slash(name="haruno", description="雪ノ下陽乃", guild_ids=guild_ids)
+    async def _haruno(self, ctx: SlashContext):
+        await ctx.send(choice(data["haruno_gif"]))
