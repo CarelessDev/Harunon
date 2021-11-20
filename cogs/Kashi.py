@@ -37,10 +37,9 @@ class Kashi(commands.Cog):
 
     @staticmethod
     def makeLyrics(lyrics: str, song_name: str):
-        lyrics = lyrics.split("\n")
-        lyrics = [x for x in lyrics if x]
+        lyrics = [f"{song_name}\n"] + lyrics.split("\n")
 
-        toSend = [song_name]
+        toSend = []
         currStr = ""
 
         for l in lyrics:
@@ -52,4 +51,4 @@ class Kashi(commands.Cog):
         if currStr:
             toSend.append(currStr)
 
-        return [f"```\n{line}\n```" for line in toSend]
+        return [f"```\n{tosend}\n```" for tosend in toSend]
