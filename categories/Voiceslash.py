@@ -225,160 +225,41 @@ class Music(commands.Cog):
         else:
             self.current_song = None
 
-    @cog_ext.cog_slash(name="lulu", description="play lulu", guild_ids=guild_ids,
-                       options=[create_option(name="url",
-                                              description="lulu gonna eat u",
-                                              required=True,
-                                              option_type=3,
-                                              choices=[create_choice(name=key, value=data["lulu"][key]) for key in list(
-                                                  data["lulu"].keys())[:25]]
-                                              )])
-    async def _lulu(self, ctx: SlashContext, url: str):
-        if not ctx.voice_client:
-            channel = ctx.author.voice.channel
-            await channel.connect()
-        await ctx.defer()
-        player = await YTDLSource1.from_url(url=url, loop=self.bot.loop)
-        ctx.voice_client.play(player, after=lambda e: print(
-            "Player error: %s" % e) if e else None)
-        embed = discord.Embed(
-            title=f"lulu has said {player.title}", color=discord.Color.blurple())
-        embed.set_thumbnail(url="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/ff8bf031-fb82-4095-a6e7-1abc85e4042c/debniea-d8b3f927-ada7-43b0-8001-725744eb6fd9.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcL2ZmOGJmMDMxLWZiODItNDA5NS1hNmU3LTFhYmM4NWU0MDQyY1wvZGVibmllYS1kOGIzZjkyNy1hZGE3LTQzYjAtODAwMS03MjU3NDRlYjZmZDkucG5nIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.K8SKYiO-lTUDWvnLxrcrL8ezNL7Y-Af-rsF-Nu51r0U")
-        embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url)
-        await ctx.send(embed=embed)
-        # await ctx.voice_client.disconnect()
-
-    @cog_ext.cog_slash(name="lulu2", description="play lulu", guild_ids=guild_ids,
-                       options=[create_option(name="url",
-                                              description="lulu gonna eat u",
-                                              required=True,
-                                              option_type=3,
-                                              choices=[create_choice(name=key, value=data["lulu"][key]) for key in list(
-                                                  data["lulu"].keys())[25:50]]
-                                              )])
-    async def _lulu2(self, ctx: SlashContext, url: str):
-        if not ctx.voice_client:
-            channel = ctx.author.voice.channel
-            await channel.connect()
-        await ctx.defer()
-        player = await YTDLSource1.from_url(url=url, loop=self.bot.loop)
-        ctx.voice_client.play(player, after=lambda e: print(
-            "Player error: %s" % e) if e else None)
-        embed = discord.Embed(
-            title=f"lulu has said {player.title}", color=discord.Color.blurple())
-        embed.set_thumbnail(url="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/ff8bf031-fb82-4095-a6e7-1abc85e4042c/debniea-d8b3f927-ada7-43b0-8001-725744eb6fd9.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcL2ZmOGJmMDMxLWZiODItNDA5NS1hNmU3LTFhYmM4NWU0MDQyY1wvZGVibmllYS1kOGIzZjkyNy1hZGE3LTQzYjAtODAwMS03MjU3NDRlYjZmZDkucG5nIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.K8SKYiO-lTUDWvnLxrcrL8ezNL7Y-Af-rsF-Nu51r0U")
-        embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url)
-        await ctx.send(embed=embed)
-
-    @cog_ext.cog_slash(name="lulu3", description="play lulu", guild_ids=guild_ids,
-                       options=[create_option(name="url",
-                                              description="lulu gonna eat u",
-                                              required=True,
-                                              option_type=3,
-                                              choices=[create_choice(name=key, value=data["lulu"][key]) for key in list(
-                                                  data["lulu"].keys())[50:75]]
-                                              )])
-    async def _lulu3(self, ctx: SlashContext, url: str):
-        if not ctx.voice_client:
-            channel = ctx.author.voice.channel
-            await channel.connect()
-        await ctx.defer()
-        player = await YTDLSource1.from_url(url=url, loop=self.bot.loop)
-        ctx.voice_client.play(player, after=lambda e: print(
-            "Player error: %s" % e) if e else None)
-        embed = discord.Embed(
-            title=f"lulu has said {player.title}", color=discord.Color.blurple())
-        embed.set_thumbnail(url="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/ff8bf031-fb82-4095-a6e7-1abc85e4042c/debniea-d8b3f927-ada7-43b0-8001-725744eb6fd9.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcL2ZmOGJmMDMxLWZiODItNDA5NS1hNmU3LTFhYmM4NWU0MDQyY1wvZGVibmllYS1kOGIzZjkyNy1hZGE3LTQzYjAtODAwMS03MjU3NDRlYjZmZDkucG5nIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.K8SKYiO-lTUDWvnLxrcrL8ezNL7Y-Af-rsF-Nu51r0U")
-        embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url)
-        await ctx.send(embed=embed)
-        # await ctx.voice_client.disconnect()
-
-    @cog_ext.cog_slash(name="lulu4", description="play lulu", guild_ids=guild_ids,
-                       options=[create_option(name="url",
-                                              description="lulu gonna eat u",
-                                              required=True,
-                                              option_type=3,
-                                              choices=[create_choice(name=key, value=data["lulu"][key]) for key in list(
-                                                  data["lulu"].keys())[75:100]]
-                                              )])
-    async def _lulu4(self, ctx: SlashContext, url: str):
-        if not ctx.voice_client:
-            channel = ctx.author.voice.channel
-            await channel.connect()
-        await ctx.defer()
-        player = await YTDLSource1.from_url(url=url, loop=self.bot.loop)
-        ctx.voice_client.play(player, after=lambda e: print(
-            "Player error: %s" % e) if e else None)
-        embed = discord.Embed(
-            title=f"lulu has said {player.title}", color=discord.Color.blurple())
-        embed.set_thumbnail(url="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/ff8bf031-fb82-4095-a6e7-1abc85e4042c/debniea-d8b3f927-ada7-43b0-8001-725744eb6fd9.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcL2ZmOGJmMDMxLWZiODItNDA5NS1hNmU3LTFhYmM4NWU0MDQyY1wvZGVibmllYS1kOGIzZjkyNy1hZGE3LTQzYjAtODAwMS03MjU3NDRlYjZmZDkucG5nIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.K8SKYiO-lTUDWvnLxrcrL8ezNL7Y-Af-rsF-Nu51r0U")
-        embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url)
-        await ctx.send(embed=embed)
-
-    @cog_ext.cog_slash(name="lulu5", description="play lulu", guild_ids=guild_ids,
-                       options=[create_option(name="url",
-                                              description="lulu gonna eat u",
-                                              required=True,
-                                              option_type=3,
-                                              choices=[create_choice(name=key, value=data["lulu"][key]) for key in list(
-                                                  data["lulu"].keys())[100:]]
-                                              )])
-    async def _lulu5(self, ctx: SlashContext, url: str):
-        if not ctx.voice_client:
-            channel = ctx.author.voice.channel
-            await channel.connect()
-        await ctx.defer()
-        player = await YTDLSource1.from_url(url=url, loop=self.bot.loop)
-        ctx.voice_client.play(player, after=lambda e: print(
-            "Player error: %s" % e) if e else None)
-        embed = discord.Embed(
-            title=f"lulu has said {player.title}", color=discord.Color.blurple())
-        embed.set_thumbnail(url="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/ff8bf031-fb82-4095-a6e7-1abc85e4042c/debniea-d8b3f927-ada7-43b0-8001-725744eb6fd9.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcL2ZmOGJmMDMxLWZiODItNDA5NS1hNmU3LTFhYmM4NWU0MDQyY1wvZGVibmllYS1kOGIzZjkyNy1hZGE3LTQzYjAtODAwMS03MjU3NDRlYjZmZDkucG5nIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.K8SKYiO-lTUDWvnLxrcrL8ezNL7Y-Af-rsF-Nu51r0U")
-        embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url)
-        await ctx.send(embed=embed)
-
-
-    @cog_ext.cog_slash(name="tesr", description="join a vc", guild_ids=guild_ids)
-    async def _tesr(self, ctx: SlashContext):
-        await ctx.send(str(self.bot.loop))
-
-    @cog_ext.cog_slash(name="join", description="join a vc", guild_ids=guild_ids)
+    @cog_ext.cog_slash(name="join", description="Join Voice Chat", guild_ids=guild_ids)
     async def _join(self, ctx: SlashContext):
         channel = ctx.author.voice.channel
-        await ctx.send("joined vc")
+        await ctx.send("お姉さんが入った!")
         await channel.connect()
 
-    @cog_ext.cog_slash(name="leave", description="leave vc", guild_ids=guild_ids)
+    @cog_ext.cog_slash(name="leave", description="Leave Voice Chat", guild_ids=guild_ids)
     async def _leave(self, ctx: SlashContext):
         await ctx.voice_client.disconnect()
-        await ctx.send("leave")
+        await ctx.send("じゃ またねええ!")
 
-    @cog_ext.cog_slash(name="skip", description="skip song", guild_ids=guild_ids)
+    @cog_ext.cog_slash(name="skip", description="Skip a Song", guild_ids=guild_ids)
     async def _skip(self, ctx: SlashContext):
         if not ctx.voice_client.is_playing:
             return await ctx.send("Not playing any music right now...")
         # self.queues[ctx.voice_client.server_id].pop(0)
         ctx.voice_client.stop()
-        await ctx.send("skip!⏭")
+        await ctx.send("⏭ スキップ成功!")
 
-    @cog_ext.cog_slash(name="pause", description="pause song", guild_ids=guild_ids)
+    @cog_ext.cog_slash(name="pause", description="Pause the Song", guild_ids=guild_ids)
     async def _pause(self, ctx: SlashContext):
         if not ctx.voice_client.is_playing:
             return await ctx.send("Not playing any music right now...")
         if ctx.voice_client.is_playing() and not ctx.voice_client.is_paused():
             ctx.voice_client.pause()
-            await ctx.send("pause⏯")
+            await ctx.send("⏯ Paused")
 
-    @cog_ext.cog_slash(name="resume", description="resume song", guild_ids=guild_ids)
+    @cog_ext.cog_slash(name="resume", description="Resume the Song", guild_ids=guild_ids)
     async def _resume(self, ctx: SlashContext):
         if ctx.voice_client.is_paused():
             ctx.voice_client.resume()
-            await ctx.send("resume")
+            await ctx.send("⏯ Resumed")
 
-    @cog_ext.cog_slash(name="queue", description="show song queue", guild_ids=guild_ids)
+    @cog_ext.cog_slash(name="queue", description="Show the Queue", guild_ids=guild_ids)
     async def _queue(self, ctx: SlashContext):
-        # await ctx.send(f"queue: {[song.title for song in self.queues[ctx.voice_client.server_id]]}")
-
         if not self.queues[self.server_id]:
             return await ctx.send("Empty queue.")
         page = 1
@@ -393,11 +274,15 @@ class Music(commands.Cog):
             queue += "`{0}.` [**{1.title}**]({1.url})\n".format(
                 i + 1, song)
 
-        embed = (discord.Embed(description="**{} tracks:**\n\n{}".format(len(self.queues[self.server_id]), queue))
-                 .set_footer(text="Viewing page {}/{}".format(page, pages)))
+        embed = (
+            discord.Embed(
+                description="**{} tracks:**\n\n{}".format(
+                    len(self.queues[self.server_id]), queue)
+            )
+            .set_footer(text="Viewing page {}/{}".format(page, pages)))
         await ctx.send(embed=embed)
 
-    @cog_ext.cog_slash(name="loop", description="loop queue", guild_ids=guild_ids)
+    @cog_ext.cog_slash(name="loop", description="Loop!", guild_ids=guild_ids)
     async def _loop_queue(self, ctx: SlashContext):
         if self.loop == False:
             self.loop = True

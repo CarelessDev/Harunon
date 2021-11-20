@@ -1,4 +1,5 @@
 from discord_slash import SlashContext, cog_ext, ComponentContext
+import discord_slash
 from discord_slash.utils.manage_commands import create_choice, create_option
 from discord_slash.utils.manage_components import create_select, create_select_option, create_button, create_actionrow, wait_for_component
 from discord_slash.model import ButtonStyle
@@ -19,6 +20,9 @@ guild_ids = [int(id) for id in os.getenv("guild_ids").split(",")]
 class Slash(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
+
+    def get_emoji(self, emoji_name: str):
+        return discord.utils.get(self.bot.emojis, name=emoji_name)
 
     async def cog_command_error(self, ctx: commands.Context, error: commands.CommandError):
         await ctx.send("An error occurred: {}".format(str(error)))
@@ -58,4 +62,14 @@ class Slash(commands.Cog):
         # print(dir(person))
         await ctx.send(str(person.avatar_url))
 
-   
+    @cog_ext.cog_slash(name="emoji", description="Send some Emoji!", guild_ids=guild_ids,
+                       options=[
+                           create_option(
+                               name="emoji_name",
+                               description="Emoji to Echo ~~act 3!~~",
+                               required=True,
+                               option_type=discord_slash.SlashCommandOptionType.STRING,
+                           )
+                       ])
+    async def emoji_echo(self, ctx: SlashContext, emoji_name: str):
+        await ctx.send(str(self.get_emoji(emoji_name)))

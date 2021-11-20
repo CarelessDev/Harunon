@@ -10,7 +10,7 @@ from categories.Slashes import Slash
 from categories.Cate2 import on_hold
 from categories.Voiceslash import Music
 
-with open("words.json") as f:
+with open("data.json") as f:
     data = json.load(f)
 
 
