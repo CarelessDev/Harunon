@@ -337,21 +337,6 @@ class Music(commands.Cog):
         embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url)
         await ctx.send(embed=embed)
 
-    @cog_ext.cog_slash(name="thorns", description="gay", guild_ids=guild_ids)
-    async def _thorns(self, ctx: SlashContext):
-        if not ctx.voice_client:
-            channel = ctx.author.voice.channel
-            await channel.connect()
-        url = choice(["https://aceship.github.io/AN-EN-Tags/etc/voice/char_293_thorns/CN_028.mp3",
-                     "https://aceship.github.io/AN-EN-Tags/etc/voice/char_293_thorns/CN_026.mp3"])
-        await ctx.defer()
-        player = await YTDLSource1.from_url(url=url, loop=self.bot.loop)
-        ctx.voice_client.play(player, after=lambda e: print(
-            "Player error: %s" % e) if e else None)
-        embed = discord.Embed(title=f"chi", color=discord.Color.blurple())
-        embed.set_image(
-            url="https://media.discordapp.net/attachments/515423288114151425/878336201675923507/image0.gif")
-        await ctx.send(embed=embed)
 
     @cog_ext.cog_slash(name="tesr", description="join a vc", guild_ids=guild_ids)
     async def _tesr(self, ctx: SlashContext):
