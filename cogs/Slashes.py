@@ -3,7 +3,7 @@ from discord_slash.utils.manage_commands import create_choice, create_option
 from discord.ext import commands
 import discord
 from random import choice
-from utils.env import guild_ids
+from utils.env import guild_ids, reddit
 from utils.data import data
 
 
@@ -83,3 +83,50 @@ class Slash(commands.Cog):
     )
     async def _haruno(self, ctx: SlashContext, waifu_name: str):
         await ctx.send(choice(data["waifu_gif"][waifu_name]))
+
+    @cog_ext.cog_slash(
+        name="reddit", description="Reddit!", guild_ids=guild_ids,
+        options=[
+            create_option(
+                name="subreddit",
+                description="Subreddit to Grab Photo",
+                required=False,
+                option_type=SOT.STRING,
+            ),
+            create_option(
+                name="search_query",
+                description="Thing to look for",
+                required=False,
+                option_type=SOT.STRING,
+            )
+        ]
+    )
+    async def _reddit(self, ctx: SlashContext, subreddit: str = "GochiUsa", search_query: str = "chino"):
+        msg = await ctx.send("待ってください ちょっとね...")
+
+        subReddit = await reddit.subreddit(subreddit)
+        r = []
+
+        async for i in subReddit.search(search_query, limit=5):
+            r.append(i)
+        random_sub = choice(r)
+        random_sub = await subReddit.random()
+
+        name = random_sub.title
+        url = random_sub.url
+        ups = random_sub.score
+        link = random_sub.permalink
+        comments = random_sub.num_comments
+
+        emb = discord.Embed(title="はい どうぞ お姉さんに任せていいよ！",
+                            description=f"```css\n{name}\n```", color=0xf1c40f)
+        emb.set_author(name=ctx.message.author, icon_url=ctx.author.avatar_url)
+
+        if random_sub.over_18:
+            await msg.edit(content="変態 バカ ボケナス 八幡")
+
+        else:
+            await msg.edit(content=f"<https://reddit.com{link}> :white_check_mark:")
+            emb.set_footer(text="このハルノには夢がある")
+            emb.set_image(url=url)
+            await ctx.send(embed=emb)

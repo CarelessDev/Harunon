@@ -17,16 +17,16 @@ if __name__ == "__main__":
 
     TOKEN = os.getenv("DISCORD_TOKEN")
 
-    bot = commands.Bot(command_prefix=commands.when_mentioned_or("haru "))
+    bot = commands.Bot(
+        command_prefix="UNUSED_PREFIX", self_bot=True, help_command=None
+    )
     slash = SlashCommand(bot, sync_commands=True)
 
-    def setup(bot):
-        bot.add_cog(Music(bot))
-        bot.add_cog(Haru(bot))
-        bot.add_cog(Kashi(bot))
-        bot.add_cog(Slash(bot))
-
-    setup(bot)
+    # * Add Cogs
+    bot.add_cog(Music(bot))
+    bot.add_cog(Haru(bot))
+    bot.add_cog(Kashi(bot))
+    bot.add_cog(Slash(bot))
 
     @bot.event
     async def on_ready():
