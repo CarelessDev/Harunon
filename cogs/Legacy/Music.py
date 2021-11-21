@@ -270,7 +270,7 @@ class MusicLegacy(commands.Cog):
         global Song_queue
 
         server_id = ctx.message.guild.id
-        if not Song_queue[server_id]:
+        if not Song_queue[server_id] and not ctx.voice_client.is_playing():
             return await ctx.send("残念ですから Queue is current empty.")
         page = page
         items_per_page = 10
