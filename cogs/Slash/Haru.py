@@ -10,7 +10,7 @@ from utils.helix import makeHelix
 from datetime import datetime
 
 
-class Slash(commands.Cog):
+class HaruSlash(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
