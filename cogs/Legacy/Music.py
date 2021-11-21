@@ -198,6 +198,7 @@ class MusicLegacy(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.loop = None
+        self.song= {}
 
     async def cog_command_error(self, ctx: commands.Context, error: commands.CommandError):
         await ctx.send('An error occurred: {}'.format(str(error)))
@@ -206,14 +207,13 @@ class MusicLegacy(commands.Cog):
         global Song_queue
         player = ctx.voice_client
         server_id = ctx.voice_client.server_id if ctx else None
+        if self.loop[server_id]:
+            source = await YTDLSource.create_source(ctx, self.song[server_id].url)
+            Song_queue[server_id].append(source)
         if (Song_queue[server_id] != [] and server_id):
-            current_song = Song_queue[server_id][0]
-            if self.loop[server_id]:
-                source = await YTDLSource.create_source(ctx, current_song.url)
-                Song_queue[server_id].append(source)
-            Song_queue[server_id].pop(0)
+            self.song[server_id] = Song_queue[server_id].pop(0)
             #print([x.title for x in Song_queue[server_id]])
-            player.play(current_song, after=lambda x=None: asyncio.run(
+            player.play(self.song[server_id], after=lambda x=None: asyncio.run(
                 self.play_nexts_song(ctx)))
         else:
             return
@@ -275,17 +275,18 @@ class MusicLegacy(commands.Cog):
             return await ctx.send("残念ですから Queue is current empty.")
         page = page
         items_per_page = 10
-        pages = math.ceil(len(Song_queue[server_id])/ items_per_page)
+        pages = math.ceil(len(Song_queue[server_id]) + 1/ items_per_page)
 
         start = (page - 1) * items_per_page
         end = start + items_per_page
 
         queue = ""
-        for i, song in enumerate(Song_queue[server_id][start:end], start=start):
-            queue += "`{0}.` [**{1.title}**]({1.url}){2}\n".format(
-                i + 1, song,
-                " <<< Now Playing" if i == 0 else ""
-            )
+        for i, song in enumerate([ctx.voice_client.source] + Song_queue[server_id][start:end], start=start):
+                queue += "`{0}.` [**{1.title}**]({1.url}){2}\n".format(
+                    i + 1, song,
+                    " <<< Now Playing" if i == 0 else ""
+                )
+
 
         embed = (
                 discord.Embed(
@@ -294,6 +295,7 @@ class MusicLegacy(commands.Cog):
                 .set_footer(text=f"Viewing page {page}/{pages}"))
 
         await ctx.send(embed=embed)
+        
 
     @commands.command(name="loop", aliases=['l'])
     async def _loop_queue(self, ctx: commands.context):
@@ -329,7 +331,8 @@ class MusicLegacy(commands.Cog):
             else:
                 Song_queue[server_id] = [source]
             if not ctx.voice_client.is_playing():
-                ctx.voice_client.play(Song_queue[server_id][0], after=lambda e: asyncio.run(
+                self.song[server_id] = Song_queue[server_id].pop(0)
+                ctx.voice_client.play(self.song[server_id], after=lambda e: asyncio.run(
                     self.play_nexts_song(ctx)))
             song = Song(source)
         await ctx.send(embed=song.create_embed("enqueued"))
@@ -363,20 +366,3 @@ class MusicLegacy(commands.Cog):
         Song_queue[server_id] = []
         msg = await ctx.send("Queue cleared! 成功!")
         await msg.add_reaction("✅")
-
-    @commands.Cog.listener()
-    async def on_voice_state_update(self, member, before, after):
-        if not member.id == self.bot.user.id:
-            return
-        elif before.channel is None:
-            voice = after.channel.guild.voice_client
-            time = 0
-            while True:
-                await asyncio.sleep(1)
-                time = time + 1
-                if voice.is_playing() and not voice.is_paused():
-                    time = 0
-                if time == 5:
-                    await voice.disconnect()
-                if not voice.is_connected():
-                    break

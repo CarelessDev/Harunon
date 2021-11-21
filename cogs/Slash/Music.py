@@ -202,18 +202,19 @@ class MusicSlash(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.loop = None
+        self.song= {}
 
     async def play_nexts_song(self, ctx):
         global Song_queue
         player = ctx.voice_client
         server_id = ctx.voice_client.server_id if ctx else None
+        if self.loop[server_id]:
+            source = await YTDLSource.create_source(ctx, self.song[server_id].url)
+            Song_queue[server_id].append(source)
         if (Song_queue[server_id] != [] and server_id):
-            current_song = Song_queue[server_id][0]
-            if self.loop[server_id]:
-                source = await YTDLSource.create_source(ctx, current_song.url)
-                Song_queue[server_id].append(source)
-            Song_queue[server_id].pop(0)
-            player.play(current_song, after=lambda x=None: asyncio.run(
+            self.song[server_id] = Song_queue[server_id].pop(0)
+            #print([x.title for x in Song_queue[server_id]])
+            player.play(self.song[server_id], after=lambda x=None: asyncio.run(
                 self.play_nexts_song(ctx)))
         else:
             return
@@ -363,11 +364,10 @@ class MusicSlash(commands.Cog):
             Song_queue[server_id].append(source)
         else:
             Song_queue[server_id] = [source]
-
         if not ctx.voice_client.is_playing():
-            ctx.voice_client.play(Song_queue[server_id][0], after=lambda e: asyncio.run(
-                self.play_nexts_song(ctx))
-            )
+            self.song[server_id] = Song_queue[server_id].pop(0)
+            ctx.voice_client.play(self.song[server_id], after=lambda e: asyncio.run(
+                self.play_nexts_song(ctx)))
 
         song = Song(source)
         await ctx.send(embed=song.create_embed("Enqueued"))
