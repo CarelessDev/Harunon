@@ -185,7 +185,7 @@ class Song:
         self.source = source
         self.requester = source.requester
 
-    def create_embed(self, words="Now playing"):
+    def create_embed(self, words="Now Playing..."):
         embed = (discord.Embed(title=words, description="```css\n{0.source.title}\n```".format(self), color=Haruno.COLOR)
                  .add_field(name="Duration", value=self.source.duration)
                  .add_field(name="Requested by", value=self.requester.mention)
@@ -303,8 +303,11 @@ class MusicSlash(commands.Cog):
                     " <<< Now Playing" if i == 0 else ""
                 )
 
-            embed = (discord.Embed(description="**{} song in queues:**\n\n{}".format(len(Song_queue[server_id]) + 1, queue), color=0x405668)
-                     .set_footer(text="Viewing page {}/{}".format(page, pages)))
+            embed = (
+                discord.Embed(
+                    description=f"**{len(Song_queue[server_id]) + 1} Songs in Queue:**\n\n{queue}", color=Haruno.COLOR
+                )
+                .set_footer(text=f"Viewing page {page}/{pages}"))
 
             if once:
                 await ctx.send(embed=embed, components=[action_row])
@@ -366,7 +369,7 @@ class MusicSlash(commands.Cog):
             )
 
         song = Song(source)
-        await ctx.send(embed=song.create_embed("enqueued"))
+        await ctx.send(embed=song.create_embed("Enqueued"))
 
     @cog_ext.cog_slash(
         name="remove", description="Remove Song from Queue", guild_ids=guild_ids,
