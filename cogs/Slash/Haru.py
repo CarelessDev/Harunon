@@ -7,6 +7,7 @@ from random import choice
 from utils.env import guild_ids, reddit
 from utils.data import data
 from utils.helix import makeHelix
+from datetime import datetime
 
 
 class Slash(commands.Cog):
@@ -23,14 +24,21 @@ class Slash(commands.Cog):
         guilds = self.bot.guilds
         await ctx.send(str(guilds))
 
+    @cog_ext.cog_slash(name="ping", description="Ping Pong 遊ぼう!", guild_ids=guild_ids)
+    async def _ping(self, ctx: SlashContext):
+        interval = datetime.utcnow() - ctx.created_at
+        await ctx.send(
+            f"Pong! Ping = {interval.total_seconds() * 1000} ms"
+        )
+
     @cog_ext.cog_slash(
         name="clearmsg", description="Clear All Message", guild_ids=guild_ids,
         options=[
             create_option(
                 name="clear_amount",
-             description="How many messages to Purge",
-             option_type=10,
-             required=True
+                description="How many messages to Purge",
+                option_type=10,
+                required=True
             )
         ]
     )
