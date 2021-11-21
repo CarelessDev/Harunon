@@ -207,11 +207,12 @@ class MusicSlash(commands.Cog):
         global Song_queue
         player = ctx.voice_client
         server_id = ctx.voice_client.server_id if ctx else None
-        if Song_queue[server_id] != [] and server_id:
-            current_song = Song_queue[server_id].pop(0)
+        if (Song_queue[server_id] != [] and server_id):
+            current_song = Song_queue[server_id][0]
             if self.loop[server_id]:
                 source = await YTDLSource.create_source(ctx, current_song.url)
                 Song_queue[server_id].append(source)
+            Song_queue[server_id].pop(0)
             player.play(current_song, after=lambda x=None: asyncio.run(
                 self.play_nexts_song(ctx)))
         else:
@@ -364,7 +365,7 @@ class MusicSlash(commands.Cog):
             Song_queue[server_id] = [source]
 
         if not ctx.voice_client.is_playing():
-            ctx.voice_client.play(Song_queue[server_id].pop(0), after=lambda e: asyncio.run(
+            ctx.voice_client.play(Song_queue[server_id][0], after=lambda e: asyncio.run(
                 self.play_nexts_song(ctx))
             )
 
