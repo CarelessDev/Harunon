@@ -58,10 +58,3 @@ if __name__ == "__main__":
         await bot.change_presence(activity=activity)
 
     bot.run(TOKEN)
-
-    # while True:
-    #     console = input()
-    #     if console == "logout":
-    #         bot.logout()
-    #     else:
-    #         print("Invalid command")
