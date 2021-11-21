@@ -269,7 +269,7 @@ class MusicSlash(commands.Cog):
     @cog_ext.cog_slash(name="queue", description="Show the Queue", guild_ids=guild_ids)
     async def _queue(self, ctx: SlashContext):
         global Song_queue
-        server_id = ctx.voice_client.server_id
+        server_id = ctx.guild_id
 
         if not Song_queue[server_id] and not ctx.voice_client.is_playing():
             return await ctx.send("残念ですから Queue is current empty.")
@@ -384,7 +384,9 @@ class MusicSlash(commands.Cog):
     )
     async def _remove(self, ctx: SlashContext, index: int):
         global Song_queue
-        server_id = ctx.voice_client.server_id
+        if not ctx.author.voice:
+            return await ctx.send("no")
+        server_id = ctx.guild_id
         if Song_queue[server_id] != []:
             index = min(max(index, -1), len(Song_queue[server_id]))
 

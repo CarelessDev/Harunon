@@ -5,6 +5,7 @@ import asyncio
 import functools
 import asyncio
 import math
+import constants.Haruno as Haruno
 
 # Silence useless bug reports messages
 youtube_dl.utils.bug_reports_message = lambda: ''
@@ -264,33 +265,33 @@ class MusicLegacy(commands.Cog):
             await ctx.message.add_reaction("⏯")
 
     @commands.command(name="queue", aliases=['q'])
-    async def _queue(self, ctx: commands.context):
+    async def _queue(self, ctx: commands.context, page:int = 1):
         """Display list of songs"""
         global Song_queue
 
-        server_id = ctx.voice_client.server_id
+        server_id = ctx.message.guild.id
         if not Song_queue[server_id]:
             return await ctx.send("残念ですから Queue is current empty.")
-        page = 1
+        page = page
         items_per_page = 10
-        pages = math.ceil(len(Song_queue[server_id]) / items_per_page)
+        pages = math.ceil(len(Song_queue[server_id]) + 1 / items_per_page)
 
         start = (page - 1) * items_per_page
         end = start + items_per_page
 
         queue = ""
-        for i, song in enumerate(Song_queue[server_id][start:end], start=start):
+        for i, song in enumerate([ctx.voice_client.source] + Song_queue[server_id][start:end], start=start):
             queue += "`{0}.` [**{1.title}**]({1.url}){2}\n".format(
                 i + 1, song,
                 " <<< Now Playing" if i == 0 else ""
             )
 
         embed = (
-            discord.Embed(
-                description="**{} song in queues:**\n\n{}".format(
-                    len(Song_queue[server_id]), queue)
-            )
-            .set_footer(text="Viewing page {}/{}".format(page, pages)))
+                discord.Embed(
+                    description=f"**{len(Song_queue[server_id]) + 1} Songs in Queue:**\n\n{queue}", color=Haruno.COLOR
+                )
+                .set_footer(text=f"Viewing page {page}/{pages}"))
+
         await ctx.send(embed=embed)
 
     @commands.command(name="loop", aliases=['l'])
@@ -335,7 +336,9 @@ class MusicLegacy(commands.Cog):
     @commands.command(name="remove", aliases=['re'])
     async def _remove(self, ctx: commands.context, index: int = 1):
         global Song_queue
-        server_id = ctx.voice_client.server_id
+        if not ctx.author.voice:
+            return await ctx.send("no")
+        server_id = ctx.message.guild.id
         if Song_queue[server_id] != []:
             index = min(max(index, -1), len(Song_queue[server_id]))
 
