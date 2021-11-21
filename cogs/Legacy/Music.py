@@ -275,7 +275,7 @@ class MusicLegacy(commands.Cog):
             return await ctx.send("残念ですから Queue is current empty.")
         page = page
         items_per_page = 10
-        pages = math.ceil(len(Song_queue[server_id]) + 1/ items_per_page)
+        pages = math.ceil((len(Song_queue[server_id]) + 1)/ items_per_page)
 
         start = (page - 1) * items_per_page
         end = start + items_per_page
@@ -290,7 +290,7 @@ class MusicLegacy(commands.Cog):
 
         embed = (
                 discord.Embed(
-                    description=f"**{len(Song_queue[server_id])} Songs in Queue:**\n\n{queue}", color=Haruno.COLOR
+                    description=f"**{len(Song_queue[server_id]) + 1} Songs in Queue:**\n\n{queue}", color=Haruno.COLOR
                 )
                 .set_footer(text=f"Viewing page {page}/{pages}"))
 

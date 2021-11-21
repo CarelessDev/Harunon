@@ -291,10 +291,11 @@ class MusicSlash(commands.Cog):
         action_row = create_actionrow(*buttons)
         page = 1
         items_per_page = 2
-        pages = math.ceil(len(Song_queue[server_id]) + 1 / items_per_page)
+        pages = math.ceil((len(Song_queue[server_id]) + 1 )/ items_per_page)
         once = True
 
         while True:
+            server_id = ctx.guild_id
             start = (page - 1) * items_per_page
             end = start + items_per_page
 
