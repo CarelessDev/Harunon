@@ -17,17 +17,19 @@ class Kashi(commands.Cog):
     async def cog_command_error(self, ctx: commands.Context, error: commands.CommandError):
         await ctx.send("An error occurred: {}".format(str(error)))
 
-    @cog_ext.cog_slash(name="lyric", description="Get Lyric", guild_ids=guild_ids, options=[
-        create_option(
-            name="song_name",
-            description="Name of Song",
-            option_type=SOT.STRING,
-            required=True,
-            choices=[
-                create_choice(name=x, value=x) for x in song_lists
-            ]
-        )
-    ])
+    @cog_ext.cog_slash(
+        name="lyric", description="Get Lyric", guild_ids=guild_ids, options=[
+            create_option(
+                name="song_name",
+                description="Name of Song",
+                option_type=SOT.STRING,
+                required=True,
+                choices=[
+                    create_choice(name=x, value=x) for x in song_lists
+                ]
+            )
+        ]
+    )
     async def _kashi(self, ctx: SlashContext, song_name: str):
         file_name = f"./歌詞/{song_name}.haruno"
         with open(file_name, "r") as f:

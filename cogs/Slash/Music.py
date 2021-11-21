@@ -1,3 +1,7 @@
+from discord_slash import SlashContext, cog_ext, ComponentContext
+from discord_slash.utils.manage_commands import create_option
+from discord_slash.utils.manage_components import create_actionrow, create_button, wait_for_component
+from discord_slash.model import ButtonStyle
 import discord
 from discord.ext import commands
 import youtube_dl
@@ -5,6 +9,9 @@ import asyncio
 import functools
 import asyncio
 import math
+from utils.env import guild_ids
+from cogs.Legacy.Music import Song_queue
+
 
 # Silence useless bug reports messages
 youtube_dl.utils.bug_reports_message = lambda: ''
@@ -109,7 +116,7 @@ class YTDLSource(discord.PCMVolumeTransformer):
         return "**{0.title}** by **{0.uploader}**".format(self)
 
     @classmethod
-    async def create_source(cls, ctx, search: str, *, loop: asyncio.BaseEventLoop = None):
+    async def create_source(cls, ctx: SlashContext, search: str, *, loop: asyncio.BaseEventLoop = None):
         loop = loop or asyncio.get_event_loop()
 
         # search algorithm
@@ -169,8 +176,6 @@ class YTDLSource(discord.PCMVolumeTransformer):
 
         return value
 
-Song_queue = {}
-
 
 class Song:
     __slots__ = ("source", "requester")
@@ -192,13 +197,10 @@ class Song:
         return embed
 
 
-class NMusic(commands.Cog):
+class MusicSlash(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        self.loop = False
-
-    async def cog_command_error(self, ctx: commands.Context, error: commands.CommandError):
-        await ctx.send('An error occurred: {}'.format(str(error)))
+        self.loop = None
 
     async def play_nexts_song(self, ctx):
         global Song_queue
@@ -209,129 +211,164 @@ class NMusic(commands.Cog):
             if self.loop[server_id]:
                 source = await YTDLSource.create_source(ctx, current_song.url)
                 Song_queue[server_id].append(source)
-            #print([x.title for x in Song_queue[server_id]])
             player.play(current_song, after=lambda x=None: asyncio.run(
                 self.play_nexts_song(ctx)))
         else:
             return
 
-    @commands.command(name='join', aliases=['j'])
-    async def _join(self, ctx:commands.context, *, channel:discord.VoiceChannel = None):
-        """Join user VC"""
-        if not channel and not ctx.author.voice:
-            raise VoiceError('You are neither connected to a voice channel nor specified a channel to join.')
+    # @cog_ext.cog_slash(name="join", description="Join Voice Chat", guild_ids=guild_ids, options=[create_option(name="channel", description="Voice Channel to join", required=False, option_type=3)])
+    # async def _join(self, ctx: SlashContext, *, channel: str = None):
+    #     if not channel and not ctx.author.voice:
+    #         raise VoiceError(
+    #             "You are neither connected to a voice channel nor specified a channel to join.")
 
-        destination = channel or ctx.author.voice.channel
-        if ctx.voice_client:
-            await ctx.voice_client.move_to(destination)
-            return
-        else:
-            await destination.connect()
-            await ctx.send("お姉さんが入った!")
-        
-        
+    #     destination = channel or ctx.author.voice.channel
+    #     if ctx.voice_client:
+    #         await ctx.voice_client.move_to(destination)
+    #         return
+    #     else:
+    #         await destination.connect()
+    #         await ctx.send("お姉さんが入った!")
 
-    @commands.command(name="leave", aliases=['le'])
-    async def _leave(self, ctx: commands.context):
-        """leave vc"""
+    @cog_ext.cog_slash(name="leave", description="Leave Voice Chat", guild_ids=guild_ids)
+    async def _leave(self, ctx: SlashContext):
         await ctx.voice_client.disconnect()
         await ctx.send("じゃ またねええ!")
 
-    @commands.command(name="skip", aliases=['s'])
-    async def _skip(self, ctx: commands.context):
-        """skip current song"""
+    @cog_ext.cog_slash(name="skip", description="Skip a Song", guild_ids=guild_ids)
+    async def _skip(self, ctx: SlashContext):
         if not ctx.voice_client.is_playing:
             return await ctx.send("Not playing any music right now...")
-        # Song_queue[ctx.voice_client.server_id].pop(0)
         ctx.voice_client.stop()
         msg = await ctx.send("スキップ成功!")
         await msg.add_reaction("⏭")
 
-    @commands.command(name="pause", aliases=['pa'])
-    async def _pause(self, ctx: commands.context):
-        """pause current song"""
+    @cog_ext.cog_slash(name="pause", description="Pause the Song", guild_ids=guild_ids)
+    async def _pause(self, ctx: SlashContext):
         if not ctx.voice_client.is_playing:
-            return await ctx.send("Not playing any music right now...")
+            return await ctx.send("Not playing any musicS right now...")
         if ctx.voice_client.is_playing() and not ctx.voice_client.is_paused():
             ctx.voice_client.pause()
-            await ctx.message.add_reaction("⏯")
+            msg = await ctx.send("Paused")
+            await msg.add_reaction("⏯")
 
-    @commands.command(name="resume", aliases=['r'])
-    async def _resume(self, ctx: commands.context):
-        """resume"""
+    @cog_ext.cog_slash(name="resume", description="Resume the Song", guild_ids=guild_ids)
+    async def _resume(self, ctx: SlashContext):
         if ctx.voice_client.is_paused():
             ctx.voice_client.resume()
-            await ctx.message.add_reaction("⏯")
+            msg = await ctx.send("Resumed")
+            await msg.add_reaction("⏯")
 
-    @commands.command(name="queue", aliases=['q'])
-    async def _queue(self, ctx: commands.context):
-        """Display list of songs"""
+    @cog_ext.cog_slash(name="queue", description="Show the Queue", guild_ids=guild_ids)
+    async def _queue(self, ctx: SlashContext):
         global Song_queue
-    
         server_id = ctx.voice_client.server_id
-        if not Song_queue[server_id]:
+        #print(server_id, Song_queue)
+        if not Song_queue[server_id] and not ctx.voice_client.is_playing():
             return await ctx.send("残念ですから Queue is current empty.")
+
+        buttons = [
+            create_button(
+                style=ButtonStyle.green,
+                label="Prev",
+                custom_id="p"),
+            create_button(
+                style=ButtonStyle.red,
+                label="Next",
+                custom_id="n")
+        ]
+        action_row = create_actionrow(*buttons)
         page = 1
-        items_per_page = 10
-        pages = math.ceil(len(Song_queue[server_id]) / items_per_page)
+        items_per_page = 2
+        pages = math.ceil(len(Song_queue[server_id]) + 1 / items_per_page)
+        once = True
 
-        start = (page - 1) * items_per_page
-        end = start + items_per_page
+        while True:
+            start = (page - 1) * items_per_page
+            end = start + items_per_page
 
-        queue = ""
-        for i, song in enumerate(Song_queue[server_id][start:end], start=start):
-            queue += "`{0}.` [**{1.title}**]({1.url}){2}\n".format(
-                i + 1, song,
-                " <<< Now Playing" if i == 0 else ""
-            )
+            queue = ""
+            for i, song in enumerate([ctx.voice_client.source] + Song_queue[server_id][start:end], start=start):
+                queue += "`{0}.` [**{1.title}**]({1.url}){2}\n".format(
+                    i + 1, song,
+                    " <<< Now Playing" if i == 0 else ""
+                )
 
-        embed = (
-            discord.Embed(
-                description="**{} song in queues:**\n\n{}".format(
-                    len(Song_queue[server_id]), queue)
-            )
-            .set_footer(text="Viewing page {}/{}".format(page, pages)))
-        await ctx.send(embed=embed)
+            embed = (discord.Embed(description="**{} song in queues:**\n\n{}".format(len(Song_queue[server_id]) + 1, queue), color=0x405668)
+                     .set_footer(text="Viewing page {}/{}".format(page, pages)))
 
-    @commands.command(name="loop", aliases=['l'])
-    async def _loop_queue(self, ctx: commands.context):
-        """loop queue"""
-        server_id = ctx.message.guild.id
-        self.loop = self.loop if self.loop else {guild_id: loop for (guild_id, loop) in [(i.id, False) for i in self.bot.guilds]} 
+            if once:
+                await ctx.send(embed=embed, components=[action_row])
+                once = False
+            else:
+                await button_ctx.edit_origin(embed=embed)
+
+            button_ctx: ComponentContext = await wait_for_component(self.bot, components=[action_row])
+
+            if button_ctx.component_id == 'p':
+                page = page - 1 if page != 1 else 1
+            elif button_ctx.component_id == 'n':
+                page = page + 1 if page != pages else pages
+
+    @cog_ext.cog_slash(name="loop", description="Loop!", guild_ids=guild_ids)
+    async def _loop_queue(self, ctx: SlashContext):
+        server_id = ctx.guild_id
+        self.loop = self.loop if self.loop else {guild_id: loop for (
+            guild_id, loop) in [(i.id, False) for i in self.bot.guilds]}
         if self.loop[server_id] == False:
             self.loop[server_id] = True
             msg = await ctx.send("ループしま～す!")
             await msg.add_reaction("➰")
-            #await ctx.send(str(self.loop))
         else:
             self.loop[server_id] = False
             msg = await ctx.send("ループしません")
             await msg.add_reaction("❌")
 
-    @commands.command(name="play", aliases=['p', 'lay'])
-    async def _play(self, ctx: commands.context, *, song: str):
-        """play song, search or url"""
+    @cog_ext.cog_slash(
+        name="play", description="Play some Music", guild_ids=guild_ids,
+        options=[
+            create_option(
+                name="song",
+                description="Song Name",
+                required=True,
+                option_type=3
+            )
+        ]
+    )
+    async def _play(self, ctx: SlashContext, *, song: str):
         global Song_queue
-        async with ctx.typing():
-            
-            await ctx.invoke(self._join)
-                
-            server_id = ctx.voice_client.server_id
-            self.loop = self.loop if self.loop else {guild_id: loop for (guild_id, loop) in [(i.id, False) for i in self.bot.guilds]} 
-        
-            source = await YTDLSource.create_source(ctx, song, loop=self.bot.loop)
-            if server_id in Song_queue:
-                Song_queue[server_id].append(source)
-            else:
-                Song_queue[server_id] = [source]
-            if not ctx.voice_client.is_playing():
-                ctx.voice_client.play(Song_queue[server_id][0], after=lambda e: asyncio.run(
-                    self.play_nexts_song(ctx)))
-            song = Song(source)
+
+        await ctx.invoke(self._join)
+
+        server_id = ctx.voice_client.server_id
+        self.loop = self.loop if self.loop else {guild_id: loop for (
+            guild_id, loop) in [(i.id, False) for i in self.bot.guilds]}
+        # await ctx.defer() # doesnt need to defer anymore because of the tsoken from invoke
+
+        source = await YTDLSource.create_source(ctx, song, loop=self.bot.loop)
+        if server_id in Song_queue:
+            Song_queue[server_id].append(source)
+        else:
+            Song_queue[server_id] = [source]
+
+        if not ctx.voice_client.is_playing():
+            ctx.voice_client.play(Song_queue[server_id].pop(0), after=lambda e: asyncio.run(
+                self.play_nexts_song(ctx)))
+        song = Song(source)
         await ctx.send(embed=song.create_embed("enqueued"))
 
-    @commands.command(name="remove", aliases=['re'])
-    async def _remove(self, ctx: commands.context, index:int = 1):
+    @cog_ext.cog_slash(
+        name="remove", description="Remove Song from Queue", guild_ids=guild_ids,
+        options=[
+            create_option(
+                name="index",
+                description="Song Index to remove",
+                required=True,
+                option_type=10
+            )
+        ]
+    )
+    async def _remove(self, ctx: SlashContext, index: int):
         global Song_queue
         server_id = ctx.voice_client.server_id
         if Song_queue[server_id] != []:
@@ -339,38 +376,18 @@ class NMusic(commands.Cog):
 
             if not self.loop[server_id]:
                 ctx.voice_client.stop()
-            msg = await ctx.send("Removed {1} [**{0.title}**](<{0.url}>) 成功!".format(Song_queue[server_id].pop(index - 1), index))
+            msg = await ctx.send("Removed {1} [**{0.title}**](<{0.url}>) 成功! ✅".format(Song_queue[server_id].pop(index - 1), index))
             await msg.add_reaction("✅")
         else:
             return await ctx.send("Queue is already empty!")
 
-    @commands.command(name="now", aliases=['n'])
+    @cog_ext.cog_slash(name="now", description="Show Current Song", guild_ids=guild_ids)
     async def _now(self, ctx: commands.Context):
-        """show current song"""
         await ctx.send(embed=Song(ctx.voice_client.source).create_embed())
 
-    @commands.command(name="clear", aliases=['c'])
+    @cog_ext.cog_slash(name="clear", description="Clear the Queue", guild_ids=guild_ids)
     async def _clear(self, ctx: commands.Context):
-        """clear queue"""
-        global Song_queue
         server_id = ctx.voice_client.server_id
         Song_queue[server_id] = []
         msg = await ctx.send("Queue cleared! 成功!")
         await msg.add_reaction("✅")
-
-    @commands.Cog.listener()
-    async def on_voice_state_update(self, member, before, after):
-        if not member.id == self.bot.user.id:
-            return
-        elif before.channel is None:
-            voice = after.channel.guild.voice_client
-            time = 0
-            while True:
-                await asyncio.sleep(1)
-                time = time + 1
-                if voice.is_playing() and not voice.is_paused():
-                    time = 0
-                if time == 5:
-                    await voice.disconnect()
-                if not voice.is_connected():
-                    break

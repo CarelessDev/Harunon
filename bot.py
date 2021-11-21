@@ -1,17 +1,16 @@
 import os
-import json
 import discord
 import asyncio
 from discord_slash import SlashCommand
 from discord.ext import commands, tasks
 from dotenv import load_dotenv
 from random import choice
-from cogs.Haru import Haru
-from cogs.Slashes import Slash
-from cogs.Kashi import Kashi
-from cogs.VoiceSlashes import Music
+from cogs.Legacy.Haru import Haru
+from cogs.Legacy.Music import MusicLegacy
+from cogs.Slash.Haru import Slash
+from cogs.Slash.Kashi import Kashi
+from cogs.Slash.Music import MusicSlash
 from utils.data import data
-from cogs.music import NMusic
 
 if __name__ == "__main__":
     load_dotenv()
@@ -22,11 +21,11 @@ if __name__ == "__main__":
     slash = SlashCommand(bot, sync_commands=True)
 
     # * Add Cogs
-    bot.add_cog(Music(bot))
+    bot.add_cog(MusicSlash(bot))
     bot.add_cog(Haru(bot))
     bot.add_cog(Kashi(bot))
     bot.add_cog(Slash(bot))
-    bot.add_cog(NMusic(bot))
+    bot.add_cog(MusicLegacy(bot))
 
     @bot.event
     async def on_ready():
@@ -41,7 +40,6 @@ if __name__ == "__main__":
             voice = after.channel.guild.voice_client
             time = 0
             while True:
-                #print(voice.is_playing())
                 await asyncio.sleep(1)
                 time = time + 1
                 if voice.is_playing() and not voice.is_paused():

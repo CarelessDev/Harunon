@@ -7,6 +7,7 @@ from utils.env import guild_ids, reddit
 from utils.data import data
 from utils.helix import text1, text2, text3, text4
 
+
 class Slash(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
@@ -36,11 +37,11 @@ class Slash(commands.Cog):
         ]
     )
     async def _cleara(self, ctx: SlashContext, clear_amount: str):
-        await ctx.send("comencing self destruct")
+        await ctx.send("Self Destruction: スタート")
         await ctx.channel.purge(limit=int(clear_amount) + 1)
 
     @cog_ext.cog_slash(
-        name="blep", description="Wtf command is this", guild_ids=guild_ids,
+        name="blep", description="No one have idea what command is this", guild_ids=guild_ids,
         options=[
             create_option(
                 name="person",
@@ -104,54 +105,86 @@ class Slash(commands.Cog):
     async def _reddit(self, ctx: SlashContext, subreddit: str = "GochiUsa", search_query: str = "chino"):
         msg = await ctx.send("待ってください ちょっとね...")
 
-        subReddit = await reddit.subreddit(subreddit)
-        r = []
+        try:
+            subReddit = await reddit.subreddit(subreddit)
+            r = []
 
-        async for i in subReddit.search(search_query, limit=5):
-            r.append(i)
-        random_sub = choice(r)
-        random_sub = await subReddit.random()
+            async for i in subReddit.search(search_query, limit=5):
+                r.append(i)
+            random_sub = choice(r)
+            random_sub = await subReddit.random()
 
-        name = random_sub.title
-        url = random_sub.url
-        ups = random_sub.score
-        link = random_sub.permalink
-        comments = random_sub.num_comments
+            name = random_sub.title
+            url = random_sub.url
+            ups = random_sub.score
+            link = random_sub.permalink
+            comments = random_sub.num_comments
 
-        emb = discord.Embed(title="はい どうぞ お姉さんに任せていいよ！",
-                            description=f"```css\n{name}\n```", color=0xf1c40f)
-        emb.set_author(name=ctx.message.author, icon_url=ctx.author.avatar_url)
-
-        if random_sub.over_18:
-            await msg.edit(content="変態 バカ ボケナス 八幡")
-
-        else:
-            await msg.edit(content=f"<https://reddit.com{link}> :white_check_mark:")
-            emb.set_footer(text="このハルノには夢がある")
+            emb = discord.Embed(
+                title="はい どうぞ お姉さんに任せていいよ！",
+                description=f"```css\n{name}\n```", color=0xf1c40f
+            )
+            emb.set_author(
+                name=ctx.message.author,
+                icon_url=ctx.author.avatar_url
+            )
+            emb.set_footer(
+                text=f"Upvote: {ups} Comments: {comments} ・ このハルノには夢がある ❄️"
+            )
             emb.set_image(url=url)
-            await ctx.send(embed=emb)
 
+            if random_sub.over_18:
+                await msg.edit(
+                    content="変態 バカ ボケナス 八幡\nhttps://c.tenor.com/qEW8kRsAFV8AAAAC/you-hachiman-oregairu.gif"
+                )
 
-    @cog_ext.cog_slash(name="helix",description="when simple text isn't enough", guild_ids=guild_ids,
-            options=[create_option(name='text',
-                                    description='text u want to improve',
-                                    required=True,
-                                    option_type=3)])
-    async def _helix(self, ctx:SlashContext, text:str):
+            else:
+                await msg.edit(
+                    content=f"<https://reddit.com{link}> :white_check_mark:", embed=emb
+                )
+
+        except Exception as e:
+            await msg.edit(content=f"残念ですけど {e}")
+
+    @cog_ext.cog_slash(
+        name="helix", description="Adenine Thymine Cytosine Guanine", guild_ids=guild_ids,
+        options=[
+            create_option(
+                name="text",
+                description="Text to Helix-ify",
+                required=True,
+                option_type=3
+            )
+        ]
+    )
+    async def _helix(self, ctx: SlashContext, text: str):
         await ctx.send(text3(text[0]))
         for i in range(len(text[1:])):
             i += 1
-            if i%6 < 1:
+            if i % 6 < 1:
                 await ctx.channel.send(text3(text[i]))
-            elif i%6 < 2:
+            elif i % 6 < 2:
                 await ctx.channel.send(text4(text[i]))
-            elif i%6 < 3:
+            elif i % 6 < 3:
                 await ctx.channel.send(text2(text[i]))
-            elif i%6 < 4:
-                await ctx.channel.send(text1(text[i])) 
-            elif i%6 < 5:
-                await ctx.channel.send(text2(text[i])) 
+            elif i % 6 < 4:
+                await ctx.channel.send(text1(text[i]))
+            elif i % 6 < 5:
+                await ctx.channel.send(text2(text[i]))
             else:
                 await ctx.channel.send(text4(text[i]))
 
-    
+    @cog_ext.cog_slash(name="gay", description="Insult someone for being gae", options=[
+        create_option(
+            name="person",
+            description="Who to insult",
+            required=False,
+            option_type=SOT.USER
+        )
+    ]
+    )
+    async def _gay(self, ctx: SlashContext, person=None):
+        if person is None:
+            person = f"<!@{ctx.author_id}>"
+
+        await ctx.send(f"{person} is gay!")
