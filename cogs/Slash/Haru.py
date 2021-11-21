@@ -26,9 +26,9 @@ class Slash(commands.Cog):
 
     @cog_ext.cog_slash(name="ping", description="Ping Pong 遊ぼう!", guild_ids=guild_ids)
     async def _ping(self, ctx: SlashContext):
-        interval = datetime.now() - ctx.created_at
+        interval = datetime.utcnow() - ctx.created_at
         await ctx.send(
-            f"Pong! Ping: {interval.total_seconds() * 1000} ms"
+            f"Pong! Ping = {interval.total_seconds() * 1000} ms"
         )
 
     @cog_ext.cog_slash(
