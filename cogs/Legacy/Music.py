@@ -328,7 +328,7 @@ class MusicLegacy(commands.Cog):
             else:
                 Song_queue[server_id] = [source]
             if not ctx.voice_client.is_playing():
-                ctx.voice_client.play(Song_queue[server_id][0], after=lambda e: asyncio.run(
+                ctx.voice_client.play(Song_queue[server_id].pop(0), after=lambda e: asyncio.run(
                     self.play_nexts_song(ctx)))
             song = Song(source)
         await ctx.send(embed=song.create_embed("enqueued"))
