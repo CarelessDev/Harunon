@@ -62,8 +62,10 @@ def makeHelix(text: str) -> List[str]:
 
         if lines >= 5:
             toSend.append(helix)
+            lines = 0
+            helix = ""
 
-        if lines > 0:
-            toSend.append(helix)
+    if lines > 0:
+        toSend.append(helix)
 
     return toSend

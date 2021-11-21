@@ -216,6 +216,26 @@ class MusicSlash(commands.Cog):
         else:
             return
 
+    @cog_ext.cog_slash(
+        name="join", description="Join Voice Chat", guild_ids=guild_ids, options=[
+            create_option(
+                name='channel', description='specific voice channel', required=False, option_type=3
+            )
+        ]
+    )
+    async def _join(self, ctx: SlashContext, *, channel: str = None):
+        if not channel and not ctx.author.voice:
+            raise VoiceError(
+                "You are neither connected to a voice channel nor specified a channel to join."
+            )
+
+        destination = channel or ctx.author.voice.channel
+        if ctx.voice_client:
+            await ctx.voice_client.move_to(destination)
+            return
+        else:
+            await destination.connect()
+
     @cog_ext.cog_slash(name="leave", description="Leave Voice Chat", guild_ids=guild_ids)
     async def _leave(self, ctx: SlashContext):
         await ctx.voice_client.disconnect()
@@ -329,7 +349,6 @@ class MusicSlash(commands.Cog):
         server_id = ctx.voice_client.server_id
         self.loop = self.loop if self.loop else {guild_id: loop for (
             guild_id, loop) in [(i.id, False) for i in self.bot.guilds]}
-        # await ctx.defer() # doesnt need to defer anymore because of the tsoken from invoke
 
         source = await YTDLSource.create_source(ctx, song, loop=self.bot.loop)
         if server_id in Song_queue:
@@ -339,7 +358,9 @@ class MusicSlash(commands.Cog):
 
         if not ctx.voice_client.is_playing():
             ctx.voice_client.play(Song_queue[server_id].pop(0), after=lambda e: asyncio.run(
-                self.play_nexts_song(ctx)))
+                self.play_nexts_song(ctx))
+            )
+
         song = Song(source)
         await ctx.send(embed=song.create_embed("enqueued"))
 
