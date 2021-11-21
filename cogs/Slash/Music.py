@@ -185,7 +185,7 @@ class Song:
         self.source = source
         self.requester = source.requester
 
-    def create_embed(self, words="Now Playing..."):
+    def create_embed(self, words=Haruno.Words.NOW_PLAYING):
         embed = (discord.Embed(title=words, description="```css\n{0.source.title}\n```".format(self), color=Haruno.COLOR)
                  .add_field(name="Duration", value=self.source.duration)
                  .add_field(name="Requested by", value=self.requester.mention)
@@ -202,7 +202,7 @@ class MusicSlash(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.loop = None
-        self.song= {}
+        self.song = {}
 
     async def play_nexts_song(self, ctx):
         global Song_queue
@@ -222,7 +222,7 @@ class MusicSlash(commands.Cog):
     @cog_ext.cog_slash(
         name="join", description="Join Voice Chat", guild_ids=guild_ids, options=[
             create_option(
-                name='channel', description='specific voice channel', required=False, option_type=3
+                name="channel", description="Voice Channel to join", required=False, option_type=3
             )
         ]
     )
@@ -242,31 +242,31 @@ class MusicSlash(commands.Cog):
     @cog_ext.cog_slash(name="leave", description="Leave Voice Chat", guild_ids=guild_ids)
     async def _leave(self, ctx: SlashContext):
         await ctx.voice_client.disconnect()
-        await ctx.send("じゃ またねええ!")
+        await ctx.send(Haruno.Words.LEAVE)
 
     @cog_ext.cog_slash(name="skip", description="Skip a Song", guild_ids=guild_ids)
     async def _skip(self, ctx: SlashContext):
         if not ctx.voice_client.is_playing:
-            return await ctx.send("Not playing any music right now...")
+            return await ctx.send(Haruno.Words.Skip.NOT_PLAYING)
         ctx.voice_client.stop()
-        msg = await ctx.send("スキップ成功!")
-        await msg.add_reaction("⏭")
+        msg = await ctx.send(Haruno.Words.Skip.SUCCESS)
+        await msg.add_reaction(Haruno.Emoji.SKIP)
 
     @cog_ext.cog_slash(name="pause", description="Pause the Song", guild_ids=guild_ids)
     async def _pause(self, ctx: SlashContext):
         if not ctx.voice_client.is_playing:
-            return await ctx.send("Not playing any musicS right now...")
+            return await ctx.send(Haruno.Words.Pause.NOT_PLAYING)
         if ctx.voice_client.is_playing() and not ctx.voice_client.is_paused():
             ctx.voice_client.pause()
-            msg = await ctx.send("Paused")
-            await msg.add_reaction("⏯")
+            msg = await ctx.send(Haruno.Words.Pause.SUCCESS)
+            await msg.add_reaction(Haruno.Emoji.PAUSE_RESUME)
 
     @cog_ext.cog_slash(name="resume", description="Resume the Song", guild_ids=guild_ids)
     async def _resume(self, ctx: SlashContext):
         if ctx.voice_client.is_paused():
             ctx.voice_client.resume()
-            msg = await ctx.send("Resumed")
-            await msg.add_reaction("⏯")
+            msg = await ctx.send(Haruno.Words.Resume.SUCCESS)
+            await msg.add_reaction(Haruno.Emoji.PAUSE_RESUME)
 
     @cog_ext.cog_slash(name="queue", description="Show the Queue", guild_ids=guild_ids)
     async def _queue(self, ctx: SlashContext):
@@ -274,7 +274,7 @@ class MusicSlash(commands.Cog):
         server_id = ctx.guild_id
 
         if not Song_queue[server_id] and not ctx.voice_client.is_playing():
-            return await ctx.send("残念ですから Queue is current empty.")
+            return await ctx.send(Haruno.Words.Queue.EMPTY)
 
         buttons = [
             create_button(
@@ -332,12 +332,12 @@ class MusicSlash(commands.Cog):
             guild_id, loop) in [(i.id, False) for i in self.bot.guilds]}
         if self.loop[server_id] == False:
             self.loop[server_id] = True
-            msg = await ctx.send("ループしま～す!")
-            await msg.add_reaction("➰")
+            msg = await ctx.send(Haruno.Words.Loop.ON)
+            await msg.add_reaction(Haruno.Emoji.Loop.ON)
         else:
             self.loop[server_id] = False
-            msg = await ctx.send("ループしません")
-            await msg.add_reaction("❌")
+            msg = await ctx.send(Haruno.Words.Loop.OFF)
+            await msg.add_reaction(Haruno.Emoji.Loop.OFF)
 
     @cog_ext.cog_slash(
         name="play", description="Play some Music", guild_ids=guild_ids,
@@ -371,7 +371,7 @@ class MusicSlash(commands.Cog):
                 self.play_nexts_song(ctx)))
 
         song = Song(source)
-        await ctx.send(embed=song.create_embed("Enqueued"))
+        await ctx.send(embed=song.create_embed(Haruno.Words.ENQUEUED))
 
     @cog_ext.cog_slash(
         name="remove", description="Remove Song from Queue", guild_ids=guild_ids,
@@ -394,10 +394,10 @@ class MusicSlash(commands.Cog):
 
             if not self.loop[server_id]:
                 ctx.voice_client.stop()
-            msg = await ctx.send("Removed {1} [**{0.title}**](<{0.url}>) 成功! ✅".format(Song_queue[server_id].pop(index - 1), index))
+            msg = await ctx.send("Removed {1} [**{0.title}**](<{0.url}>) 成功!".format(Song_queue[server_id].pop(index - 1), index))
             await msg.add_reaction("✅")
         else:
-            return await ctx.send("Queue is already empty!")
+            return await ctx.send(Haruno.Words.Queue.EMPTY)
 
     @cog_ext.cog_slash(name="now", description="Show Current Song", guild_ids=guild_ids)
     async def _now(self, ctx: commands.Context):
@@ -407,5 +407,5 @@ class MusicSlash(commands.Cog):
     async def _clear(self, ctx: commands.Context):
         server_id = ctx.voice_client.server_id
         Song_queue[server_id] = []
-        msg = await ctx.send("Queue cleared! 成功!")
+        msg = await ctx.send(Haruno.Words.Queue.CLEARED)
         await msg.add_reaction("✅")

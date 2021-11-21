@@ -181,7 +181,7 @@ class Song:
         self.source = source
         self.requester = source.requester
 
-    def create_embed(self, words="Now playing"):
+    def create_embed(self, words=Haruno.Words.NOW_PLAYING):
         embed = (discord.Embed(title=words, description="```css\n{0.source.title}\n```".format(self), color=0x5a3844)
                  .add_field(name="Duration", value=self.source.duration)
                  .add_field(name="Requested by", value=self.requester.mention)
@@ -198,7 +198,7 @@ class MusicLegacy(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.loop = None
-        self.song= {}
+        self.song = {}
 
     async def cog_command_error(self, ctx: commands.Context, error: commands.CommandError):
         await ctx.send('An error occurred: {}'.format(str(error)))
@@ -231,71 +231,70 @@ class MusicLegacy(commands.Cog):
             return
         else:
             await destination.connect()
-            await ctx.send("お姉さんが入った!")
+            await ctx.send(Haruno.Words.JOIN)
 
     @commands.command(name="leave", aliases=['le'])
     async def _leave(self, ctx: commands.context):
         """leave vc"""
         await ctx.voice_client.disconnect()
-        await ctx.send("じゃ またねええ!")
+        await ctx.send(Haruno.Words.LEAVE)
 
     @commands.command(name="skip", aliases=['s'])
     async def _skip(self, ctx: commands.context):
         """skip current song"""
         if not ctx.voice_client.is_playing:
-            return await ctx.send("Not playing any music right now...")
+            return await ctx.send(Haruno.Words.Skip.NOT_PLAYING)
         # Song_queue[ctx.voice_client.server_id].pop(0)
         ctx.voice_client.stop()
-        msg = await ctx.send("スキップ成功!")
-        await msg.add_reaction("⏭")
+        msg = await ctx.send(Haruno.Words.Skip.SUCCESS)
+        await msg.add_reaction(Haruno.Emoji.SKIP)
 
     @commands.command(name="pause", aliases=['pa'])
     async def _pause(self, ctx: commands.context):
         """pause current song"""
         if not ctx.voice_client.is_playing:
-            return await ctx.send("Not playing any music right now...")
+            return await ctx.send(Haruno.Words.Pause.NOT_PLAYING)
         if ctx.voice_client.is_playing() and not ctx.voice_client.is_paused():
             ctx.voice_client.pause()
-            await ctx.message.add_reaction("⏯")
+            await ctx.message.add_reaction(Haruno.Emoji.PAUSE_RESUME)
 
     @commands.command(name="resume", aliases=['r'])
     async def _resume(self, ctx: commands.context):
         """resume"""
         if ctx.voice_client.is_paused():
             ctx.voice_client.resume()
-            await ctx.message.add_reaction("⏯")
+            await ctx.message.add_reaction(Haruno.Emoji.PAUSE_RESUME)
 
     @commands.command(name="queue", aliases=['q'])
-    async def _queue(self, ctx: commands.context, page:int = 1):
+    async def _queue(self, ctx: commands.context, page: int = 1):
         """Display list of songs"""
         global Song_queue
 
         server_id = ctx.message.guild.id
         if not Song_queue[server_id] and not ctx.voice_client.is_playing():
-            return await ctx.send("残念ですから Queue is current empty.")
+            return await ctx.send(Haruno.Words.Queue.EMPTY)
         page = page
         items_per_page = 10
         pages = math.ceil((len(Song_queue[server_id]) + 1)/ items_per_page)
+
 
         start = (page - 1) * items_per_page
         end = start + items_per_page
 
         queue = ""
         for i, song in enumerate([ctx.voice_client.source] + Song_queue[server_id][start:end], start=start):
-                queue += "`{0}.` [**{1.title}**]({1.url}){2}\n".format(
-                    i + 1, song,
-                    " <<< Now Playing" if i == 0 else ""
-                )
-
+            queue += "`{0}.` [**{1.title}**]({1.url}){2}\n".format(
+                i + 1, song,
+                " <<< Now Playing" if i == 0 else ""
+            )
 
         embed = (
-                discord.Embed(
-                    description=f"**{len(Song_queue[server_id]) + 1} Songs in Queue:**\n\n{queue}", color=Haruno.COLOR
-                )
-                .set_footer(text=f"Viewing page {page}/{pages}"))
+            discord.Embed(
+                description=f"**{len(Song_queue[server_id])} Songs in Queue:**\n\n{queue}", color=Haruno.COLOR
+            )
+            .set_footer(text=f"Viewing page {page}/{pages}"))
 
         await ctx.send(embed=embed)
-        
 
     @commands.command(name="loop", aliases=['l'])
     async def _loop_queue(self, ctx: commands.context):
@@ -305,13 +304,12 @@ class MusicLegacy(commands.Cog):
             guild_id, loop) in [(i.id, False) for i in self.bot.guilds]}
         if self.loop[server_id] == False:
             self.loop[server_id] = True
-            msg = await ctx.send("ループしま～す!")
-            await msg.add_reaction("➰")
-            # await ctx.send(str(self.loop))
+            msg = await ctx.send(Haruno.Words.Loop.ON)
+            await msg.add_reaction(Haruno.Emoji.Loop.ON)
         else:
             self.loop[server_id] = False
-            msg = await ctx.send("ループしません")
-            await msg.add_reaction("❌")
+            msg = await ctx.send(Haruno.Words.Loop.OFF)
+            await msg.add_reaction(Haruno.Emoji.Loop.OFF)
 
     @commands.command(name="play", aliases=['p', 'lay'])
     async def _play(self, ctx: commands.context, *, song: str):
@@ -335,7 +333,7 @@ class MusicLegacy(commands.Cog):
                 ctx.voice_client.play(self.song[server_id], after=lambda e: asyncio.run(
                     self.play_nexts_song(ctx)))
             song = Song(source)
-        await ctx.send(embed=song.create_embed("enqueued"))
+        await ctx.send(embed=song.create_embed(Haruno.Words.ENQUEUED))
 
     @commands.command(name="remove", aliases=['re'])
     async def _remove(self, ctx: commands.context, index: int = 1):
@@ -351,7 +349,7 @@ class MusicLegacy(commands.Cog):
             msg = await ctx.send("Removed {1} [**{0.title}**](<{0.url}>) 成功!".format(Song_queue[server_id].pop(index - 1), index))
             await msg.add_reaction("✅")
         else:
-            return await ctx.send("Queue is already empty!")
+            return await ctx.send(Haruno.Words.Queue.EMPTY)
 
     @commands.command(name="now", aliases=['n'])
     async def _now(self, ctx: commands.Context):
@@ -364,5 +362,5 @@ class MusicLegacy(commands.Cog):
         global Song_queue
         server_id = ctx.voice_client.server_id
         Song_queue[server_id] = []
-        msg = await ctx.send("Queue cleared! 成功!")
+        msg = await ctx.send(Haruno.Words.Queue.CLEARED)
         await msg.add_reaction("✅")
