@@ -14,9 +14,7 @@ class Kashi(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    async def cog_command_error(self, ctx: commands.Context, error: commands.CommandError):
-        await ctx.send("An error occurred: {}".format(str(error)))
-
+    
     @cog_ext.cog_slash(
         name="lyric", description="Get Lyric", guild_ids=guild_ids, options=[
             create_option(
