@@ -5,7 +5,7 @@ import discord
 from random import choice
 from utils.env import guild_ids, reddit
 from utils.data import data
-from utils.helix import text1, text2, text3, text4
+from utils.helix import makeHelix
 
 
 class Slash(commands.Cog):
@@ -158,30 +158,20 @@ class Slash(commands.Cog):
         ]
     )
     async def _helix(self, ctx: SlashContext, text: str):
-        await ctx.send(text3(text[0]))
-        for i in range(len(text[1:])):
-            i += 1
-            if i % 6 < 1:
-                await ctx.channel.send(text3(text[i]))
-            elif i % 6 < 2:
-                await ctx.channel.send(text4(text[i]))
-            elif i % 6 < 3:
-                await ctx.channel.send(text2(text[i]))
-            elif i % 6 < 4:
-                await ctx.channel.send(text1(text[i]))
-            elif i % 6 < 5:
-                await ctx.channel.send(text2(text[i]))
-            else:
-                await ctx.channel.send(text4(text[i]))
+        helixes = makeHelix(text)
 
-    @cog_ext.cog_slash(name="gay", description="Insult someone for being gae", options=[
-        create_option(
-            name="person",
-            description="Who to insult",
-            required=False,
-            option_type=SOT.USER
-        )
-    ]
+        for helix in helixes:
+            await ctx.send(helix)
+
+    @cog_ext.cog_slash(
+        name="gay", description="Insult someone for being gae", options=[
+            create_option(
+                name="person",
+                description="Who to insult",
+                required=False,
+                option_type=SOT.USER
+            )
+        ]
     )
     async def _gay(self, ctx: SlashContext, person=None):
         if person is None:

@@ -216,20 +216,6 @@ class MusicSlash(commands.Cog):
         else:
             return
 
-    # @cog_ext.cog_slash(name="join", description="Join Voice Chat", guild_ids=guild_ids, options=[create_option(name="channel", description="Voice Channel to join", required=False, option_type=3)])
-    # async def _join(self, ctx: SlashContext, *, channel: str = None):
-    #     if not channel and not ctx.author.voice:
-    #         raise VoiceError(
-    #             "You are neither connected to a voice channel nor specified a channel to join.")
-
-    #     destination = channel or ctx.author.voice.channel
-    #     if ctx.voice_client:
-    #         await ctx.voice_client.move_to(destination)
-    #         return
-    #     else:
-    #         await destination.connect()
-    #         await ctx.send("お姉さんが入った!")
-
     @cog_ext.cog_slash(name="leave", description="Leave Voice Chat", guild_ids=guild_ids)
     async def _leave(self, ctx: SlashContext):
         await ctx.voice_client.disconnect()
