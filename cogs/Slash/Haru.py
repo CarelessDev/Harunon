@@ -15,8 +15,6 @@ class Slash(commands.Cog):
     def get_emoji(self, emoji_name: str):
         return discord.utils.get(self.bot.emojis, name=emoji_name)
 
-    async def cog_command_error(self, ctx: commands.Context, error: commands.CommandError):
-        await ctx.send("An error occurred: {}".format(str(error)))
 
     @cog_ext.cog_slash(
         name="guild", description="Get Guild Metainfo", guild_ids=guild_ids
