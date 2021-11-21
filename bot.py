@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 from random import choice
 from cogs.Legacy.Haru import Haru
 from cogs.Legacy.Music import MusicLegacy
-from cogs.Slash.Haru import Slash
+from cogs.Slash.Haru import HaruSlash
 from cogs.Slash.Kashi import Kashi
 from cogs.Slash.Music import MusicSlash
 from utils.data import data
@@ -20,12 +20,14 @@ if __name__ == "__main__":
     bot = commands.Bot(command_prefix="simp")
     slash = SlashCommand(bot, sync_commands=True)
 
-    # * Add Cogs
-    bot.add_cog(MusicSlash(bot))
+    # * Add Cogs (Legacy)
     bot.add_cog(Haru(bot))
-    bot.add_cog(Kashi(bot))
-    bot.add_cog(Slash(bot))
     bot.add_cog(MusicLegacy(bot))
+
+    # * Slash Cogs
+    bot.add_cog(HaruSlash(bot))
+    bot.add_cog(Kashi(bot))
+    bot.add_cog(MusicSlash(bot))
 
     @bot.event
     async def on_ready():
