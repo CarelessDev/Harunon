@@ -234,10 +234,9 @@ class MusicSlash(commands.Cog):
 
         destination = channel or ctx.author.voice.channel
         if ctx.voice_client:
-            await ctx.voice_client.move_to(destination)
-            return
+            return await ctx.voice_client.move_to(destination)
         else:
-            await destination.connect()
+            return await destination.connect()
 
     @cog_ext.cog_slash(name="leave", description="Leave Voice Chat", guild_ids=guild_ids)
     async def _leave(self, ctx: SlashContext):
@@ -358,8 +357,8 @@ class MusicSlash(commands.Cog):
         server_id = ctx.voice_client.server_id
         self.loop = self.loop if self.loop else {guild_id: loop for (
             guild_id, loop) in [(i.id, False) for i in self.bot.guilds]}
+        
         await ctx.defer()
-
         source = await YTDLSource.create_source(ctx, song, loop=self.bot.loop)
         if server_id in Song_queue:
             Song_queue[server_id].append(source)
@@ -407,5 +406,6 @@ class MusicSlash(commands.Cog):
     async def _clear(self, ctx: commands.Context):
         server_id = ctx.voice_client.server_id
         Song_queue[server_id] = []
+        self.song[server_id] = None
         msg = await ctx.send("Queue cleared! 成功!")
         await msg.add_reaction("✅")

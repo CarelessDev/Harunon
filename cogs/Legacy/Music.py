@@ -364,5 +364,6 @@ class MusicLegacy(commands.Cog):
         global Song_queue
         server_id = ctx.voice_client.server_id
         Song_queue[server_id] = []
+        self.song[server_id] = None
         msg = await ctx.send("Queue cleared! 成功!")
         await msg.add_reaction("✅")
