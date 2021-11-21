@@ -39,6 +39,8 @@ def text4(char):
 
 
 def makeHelix(text: str) -> List[str]:
+    text = text.lower().replace(" ", "")
+
     lines = 1
     helix = text3(text[0])
     toSend = []

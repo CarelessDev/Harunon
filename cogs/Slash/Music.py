@@ -11,6 +11,7 @@ import asyncio
 import math
 from utils.env import guild_ids
 from cogs.Legacy.Music import Song_queue
+import constants.Haruno as Haruno
 
 
 # Silence useless bug reports messages
@@ -185,7 +186,7 @@ class Song:
         self.requester = source.requester
 
     def create_embed(self, words="Now playing"):
-        embed = (discord.Embed(title=words, description="```css\n{0.source.title}\n```".format(self), color=0x5a3844)
+        embed = (discord.Embed(title=words, description="```css\n{0.source.title}\n```".format(self), color=Haruno.COLOR)
                  .add_field(name="Duration", value=self.source.duration)
                  .add_field(name="Requested by", value=self.requester.mention)
                  .add_field(name="Uploader", value="[{0.source.uploader}]({0.source.uploader_url})".format(self))
@@ -269,7 +270,7 @@ class MusicSlash(commands.Cog):
     async def _queue(self, ctx: SlashContext):
         global Song_queue
         server_id = ctx.voice_client.server_id
-        #print(server_id, Song_queue)
+
         if not Song_queue[server_id] and not ctx.voice_client.is_playing():
             return await ctx.send("残念ですから Queue is current empty.")
 
@@ -277,11 +278,13 @@ class MusicSlash(commands.Cog):
             create_button(
                 style=ButtonStyle.green,
                 label="Prev",
-                custom_id="p"),
+                custom_id="p"
+            ),
             create_button(
                 style=ButtonStyle.red,
                 label="Next",
-                custom_id="n")
+                custom_id="n"
+            ),
         ]
         action_row = create_actionrow(*buttons)
         page = 1
@@ -349,6 +352,7 @@ class MusicSlash(commands.Cog):
         server_id = ctx.voice_client.server_id
         self.loop = self.loop if self.loop else {guild_id: loop for (
             guild_id, loop) in [(i.id, False) for i in self.bot.guilds]}
+        await ctx.defer()
 
         source = await YTDLSource.create_source(ctx, song, loop=self.bot.loop)
         if server_id in Song_queue:

@@ -1,3 +1,4 @@
+from discord.user import ClientUser
 from discord_slash import SlashContext, cog_ext, SlashCommandOptionType as SOT
 from discord_slash.utils.manage_commands import create_choice, create_option
 from discord.ext import commands
@@ -14,7 +15,6 @@ class Slash(commands.Cog):
 
     def get_emoji(self, emoji_name: str):
         return discord.utils.get(self.bot.emojis, name=emoji_name)
-
 
     @cog_ext.cog_slash(
         name="guild", description="Get Guild Metainfo", guild_ids=guild_ids
@@ -158,8 +158,9 @@ class Slash(commands.Cog):
     async def _helix(self, ctx: SlashContext, text: str):
         helixes = makeHelix(text)
 
+        await ctx.send("HELIX JIKAN DE~SU!")
         for helix in helixes:
-            await ctx.send(helix)
+            await ctx.channel.send(helix)
 
     @cog_ext.cog_slash(
         name="gay", description="Insult someone for being gae", options=[
@@ -171,8 +172,8 @@ class Slash(commands.Cog):
             )
         ]
     )
-    async def _gay(self, ctx: SlashContext, person=None):
+    async def _gay(self, ctx: SlashContext, person: ClientUser = None):
         if person is None:
-            person = f"<!@{ctx.author_id}>"
+            await ctx.send(f"<@!{ctx.author_id}> is gay!")
 
-        await ctx.send(f"{person} is gay!")
+        await ctx.send(f"{person.mention} is gay!")
