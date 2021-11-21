@@ -1,6 +1,7 @@
 import os
 import json
 import discord
+import asyncio
 from discord_slash import SlashCommand
 from discord.ext import commands, tasks
 from dotenv import load_dotenv
@@ -10,16 +11,14 @@ from cogs.Slashes import Slash
 from cogs.Kashi import Kashi
 from cogs.VoiceSlashes import Music
 from utils.data import data
-
+from cogs.music import NMusic
 
 if __name__ == "__main__":
     load_dotenv()
 
     TOKEN = os.getenv("DISCORD_TOKEN")
 
-    bot = commands.Bot(
-        command_prefix="UNUSED_PREFIX", self_bot=True, help_command=None
-    )
+    bot = commands.Bot(command_prefix="simp")
     slash = SlashCommand(bot, sync_commands=True)
 
     # * Add Cogs
@@ -27,11 +26,30 @@ if __name__ == "__main__":
     bot.add_cog(Haru(bot))
     bot.add_cog(Kashi(bot))
     bot.add_cog(Slash(bot))
+    bot.add_cog(NMusic(bot))
 
     @bot.event
     async def on_ready():
         print(f"はるのん Ready! Logged in as {bot.user.name}")
         change_status.start()
+
+    @bot.event
+    async def on_voice_state_update(member, before, after):
+        if not member.id == bot.user.id:
+            return
+        elif before.channel is None:
+            voice = after.channel.guild.voice_client
+            time = 0
+            while True:
+                #print(voice.is_playing())
+                await asyncio.sleep(1)
+                time = time + 1
+                if voice.is_playing() and not voice.is_paused():
+                    time = 0
+                if time == 5:
+                    await voice.disconnect()
+                if not voice.is_connected():
+                    break
 
     @tasks.loop(seconds=300)
     async def change_status():

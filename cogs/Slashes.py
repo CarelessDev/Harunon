@@ -5,7 +5,7 @@ import discord
 from random import choice
 from utils.env import guild_ids, reddit
 from utils.data import data
-
+from utils.helix import text1, text2, text3, text4
 
 class Slash(commands.Cog):
     def __init__(self, bot: commands.Bot):
@@ -130,3 +130,28 @@ class Slash(commands.Cog):
             emb.set_footer(text="このハルノには夢がある")
             emb.set_image(url=url)
             await ctx.send(embed=emb)
+
+
+    @cog_ext.cog_slash(name="helix",description="when simple text isn't enough", guild_ids=guild_ids,
+            options=[create_option(name='text',
+                                    description='text u want to improve',
+                                    required=True,
+                                    option_type=3)])
+    async def _helix(self, ctx:SlashContext, text:str):
+        await ctx.send(text3(text[0]))
+        for i in range(len(text[1:])):
+            i += 1
+            if i%6 < 1:
+                await ctx.channel.send(text3(text[i]))
+            elif i%6 < 2:
+                await ctx.channel.send(text4(text[i]))
+            elif i%6 < 3:
+                await ctx.channel.send(text2(text[i]))
+            elif i%6 < 4:
+                await ctx.channel.send(text1(text[i])) 
+            elif i%6 < 5:
+                await ctx.channel.send(text2(text[i])) 
+            else:
+                await ctx.channel.send(text4(text[i]))
+
+    
