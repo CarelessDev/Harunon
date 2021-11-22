@@ -50,7 +50,7 @@ class HaruSlash(commands.Cog):
         await asyncio.sleep(1)
         await ctx.channel.purge(limit=int(clear_amount) + 1)
 
-        await ctx.send("**ザ・ハンドが消した!!!**")
+        await ctx.send(f"**ザ・ハンドが{clear_amount}メッセージを消した!!!**")
         await ctx.channel.send("https://c.tenor.com/xexSk5SQBbAAAAAC/discord-mod.gif")
 
     @cog_ext.cog_slash(
