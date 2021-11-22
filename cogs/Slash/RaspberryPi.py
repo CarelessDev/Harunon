@@ -13,7 +13,7 @@ class PiHelper:
             # * Check Raspberry Pi Temperature
             temp = check_output(["vcgencmd", "measure_temp"]).decode("utf-8")
             temp = temp.split("=")[1].split("'")[0]  # * By GitHub Copilot ✨✨
-            return temp
+            return int(temp)
         except:
             return -274  # * Not on Raspberry Pi
 
@@ -23,7 +23,7 @@ class PiHelper:
             ram = check_output(["free", "-m"]).decode("utf-8")
             ramUsed = ram.split("\n")[1].split()[2]
             ramCap = ram.split("\n")[1].split()[1]
-            return [ramUsed, ramCap]
+            return [int(ramUsed), int(ramCap)]
         except:
             return [-1, -1]  # * Not on Linux
 
