@@ -135,7 +135,7 @@ class HaruSlash(commands.Cog):
                 icon_url=ctx.author.avatar_url
             )
             emb.set_footer(
-                text=f"Upvote: {ups} Comments: {comments} ・ このハルノには夢がある ❄️"
+                text=f"Upvote: {ups} Comments: {comments}・このハルノには夢がある ❄️"
             )
             emb.set_image(url=url)
 
