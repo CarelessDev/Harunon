@@ -1,4 +1,8 @@
+from datetime import datetime
+
 COLOR = 0x5a3844
+
+START_TIME = datetime.utcnow()
 
 
 class Words:
