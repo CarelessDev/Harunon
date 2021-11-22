@@ -63,7 +63,7 @@ class HaruLegacy(commands.Cog):
             emj = Haru.get_emoji(ctx, "lady")
 
             await msg.edit(content=f"<https://reddit.com{link}>", embed=emb)
-            await ctx.channel.send(f"||{url}||")
+            await ctx.channel.send(f"|| {url} ||")
    
 
         else:
