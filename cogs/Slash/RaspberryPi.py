@@ -114,7 +114,7 @@ class RaspberryPi(commands.Cog):
 
         if status["available"]["temp"]:
             embed = embed.add_field(
-                name="CPU Temperature", value=f"{status['temp']}°C")
+                name="CPU Temperature", value=f"{status['temp']} °C")
         if status["available"]["ram"]:
             embed = embed.add_field(
                 name="RAM Usage", value=f"{status['ram']['usage']}MB / {status['ram']['max']}MB"

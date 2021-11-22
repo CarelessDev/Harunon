@@ -1,7 +1,7 @@
 import os
 import discord
 import asyncio
-from discord_slash import SlashCommand
+from discord_slash import SlashCommand, SlashContext
 from discord.ext import commands, tasks
 from dotenv import load_dotenv
 from random import choice
@@ -52,6 +52,12 @@ if __name__ == "__main__":
                     await voice.disconnect()
                 if not voice.is_connected():
                     break
+
+    @bot.event
+    async def on_slash_command_error(ctx:SlashContext, ex):
+        print('An error occurred: {}'.format(str(ex)))
+
+        
 
     @tasks.loop(seconds=300)
     async def change_status():
