@@ -8,6 +8,7 @@ from utils.env import guild_ids, reddit
 from utils.data import data
 from utils.helix import makeHelix
 from datetime import datetime
+import asyncio
 
 
 class HaruSlash(commands.Cog):
@@ -43,7 +44,8 @@ class HaruSlash(commands.Cog):
         ]
     )
     async def _cleara(self, ctx: SlashContext, clear_amount: str):
-        await ctx.send("Self Destruction: スタート")
+        await ctx.send("**ザ・ハンドが消す!!!**")
+        await asyncio.sleep(1)
         await ctx.channel.purge(limit=int(clear_amount) + 1)
 
     @cog_ext.cog_slash(
