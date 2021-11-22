@@ -8,15 +8,13 @@ from utils.env import guild_ids, reddit
 from utils.data import data
 from utils.helix import makeHelix
 from datetime import datetime
-import asyncio
+from cogs.Shared.Haru import Haru
+import constants.Haruno as Haruno
 
 
 class HaruSlash(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-
-    def get_emoji(self, emoji_name: str):
-        return discord.utils.get(self.bot.emojis, name=emoji_name)
 
     @cog_ext.cog_slash(
         name="guild", description="Get Guild Metainfo", guild_ids=guild_ids
@@ -48,7 +46,7 @@ class HaruSlash(commands.Cog):
 
         await ctx.channel.purge(limit=int(clear_amount) + 1)
 
-        await ctx.send(f"**ザ・ハンドが{clear_amount}メッセージを消した!!!**")
+        await ctx.send(f"ザ・ハンドが**{clear_amount}メッセージ**を消した!!!")
         await ctx.channel.send("https://c.tenor.com/xexSk5SQBbAAAAAC/discord-mod.gif")
 
     @cog_ext.cog_slash(
@@ -77,7 +75,7 @@ class HaruSlash(commands.Cog):
         ]
     )
     async def emoji_echo(self, ctx: SlashContext, emoji_name: str):
-        await ctx.send(str(self.get_emoji(emoji_name)))
+        await ctx.send(str(Haru.get_emoji(ctx, emoji_name)))
 
     @cog_ext.cog_slash(
         name="simp", description="SIMP: Super Idol de xiao rong", guild_ids=guild_ids,
@@ -113,17 +111,27 @@ class HaruSlash(commands.Cog):
             )
         ]
     )
-    async def _reddit(self, ctx: SlashContext, subreddit: str = "GochiUsa", search_query: str = "chino"):
+    async def _reddit(
+        self, ctx: SlashContext,
+        subreddit: str = "gochiusa",
+        search_query: str = None
+    ):
         msg = await ctx.send("待ってください ちょっとね...")
+
+        if not search_query:
+            if subreddit.lower() == "gochiusa":
+                search_query = "chino"
 
         try:
             subReddit = await reddit.subreddit(subreddit)
-            r = []
 
-            async for i in subReddit.search(search_query, limit=5):
-                r.append(i)
-            random_sub = choice(r)
-            random_sub = await subReddit.random()
+            if search_query:
+                r = []
+                async for i in subReddit.search(search_query, limit=5):
+                    r.append(i)
+                random_sub = choice(r)
+            else:
+                random_sub = await subReddit.random()
 
             name = random_sub.title
             url = random_sub.url
@@ -132,8 +140,8 @@ class HaruSlash(commands.Cog):
             comments = random_sub.num_comments
 
             emb = discord.Embed(
-                title="はい どうぞ お姉さんに任せていいよ！",
-                description=f"```css\n{name}\n```", color=0xf1c40f
+                title="どうぞ お姉さんからよ！",
+                description=f"```css\n{name}\n```", color=Haruno.COLOR
             )
             emb.set_author(
                 name=ctx.message.author,
@@ -155,7 +163,7 @@ class HaruSlash(commands.Cog):
                 )
 
         except Exception as e:
-            await msg.edit(content=f"残念ですけど {e}")
+            await msg.edit(content=f"ごめんね {e}")
 
     @cog_ext.cog_slash(
         name="helix", description="Adenine Thymine Cytosine Guanine", guild_ids=guild_ids,

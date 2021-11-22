@@ -5,13 +5,15 @@ from discord_slash import SlashCommand, SlashContext
 from discord.ext import commands, tasks
 from dotenv import load_dotenv
 from random import choice
-from cogs.Legacy.Haru import Haru
+from cogs.Legacy.Haru import HaruLegacy
 from cogs.Legacy.Music import MusicLegacy
 from cogs.Slash.Haru import HaruSlash
 from cogs.Slash.Kashi import Kashi
 from cogs.Slash.Music import MusicSlash
 from cogs.Slash.RaspberryPi import RaspberryPi
 from utils.data import data
+from datetime import datetime
+import constants.Haruno as Haruno
 
 if __name__ == "__main__":
     load_dotenv()
@@ -22,7 +24,7 @@ if __name__ == "__main__":
     slash = SlashCommand(bot, sync_commands=True)
 
     # * Add Cogs (Legacy)
-    bot.add_cog(Haru(bot))
+    bot.add_cog(HaruLegacy(bot))
     bot.add_cog(MusicLegacy(bot))
 
     # * Slash Cogs
@@ -33,7 +35,9 @@ if __name__ == "__main__":
 
     @bot.event
     async def on_ready():
-        print(f"はるのん Ready! Logged in as {bot.user.name}")
+        time_took = (datetime.utcnow() -
+                     Haruno.START_TIME).total_seconds() * 1000
+        print(f"はるのん Ready! Logged in as {bot.user.name}, took {time_took} ms")
         change_status.start()
 
     @bot.event
@@ -54,10 +58,8 @@ if __name__ == "__main__":
                     break
 
     @bot.event
-    async def on_slash_command_error(ctx:SlashContext, ex):
-        print('An error occurred: {}'.format(str(ex)))
-
-        
+    async def on_slash_command_error(ctx: SlashContext, ex):
+        print(f"An error occurred: {ex}")
 
     @tasks.loop(seconds=300)
     async def change_status():

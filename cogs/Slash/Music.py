@@ -174,8 +174,7 @@ class MusicSlash(commands.Cog):
 
         await ctx.defer()
         source = await YTDLSource.create_source(ctx, song, loop=self.bot.loop)
-        
-        
+
         if server_id in Song_queue:
             Song_queue[server_id].append(source)
         else:

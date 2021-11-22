@@ -60,11 +60,26 @@ class PiHelper:
         # * By GitHub Copilot again ✨✨
 
     @staticmethod
+    def _get_version() -> str:
+        try:
+            # * GitHub Copilot amazed me again ✨✨
+            chash = check_output(
+                ["git", "rev-parse", "HEAD"]).decode("utf-8")[:7]
+            ccount = int(check_output(
+                ["git", "rev-list", "--count", "HEAD"]).decode("utf-8").strip())
+            cbranch = check_output(
+                ["git", "rev-parse", "--abbrev-ref", "HEAD"]).decode("utf-8").strip()
+            return f"Version: {ccount} ({cbranch} @ {chash})"
+        except:
+            return "Version: UNKNOWN"
+
+    @staticmethod
     def get_status():
         temp = PiHelper._get_cpu_temp()
         ram = PiHelper._get_ram_usage()
         linuxup = PiHelper._get_linux_uptime()
         processup = PiHelper._get_process_uptime()
+        version = PiHelper._get_version()
 
         return {
             "system": "Raspberry Pi" if temp > -274 else "Linux" if ram[0] > 0 else "Windows",
@@ -75,6 +90,7 @@ class PiHelper:
             },
             "linuxup": linuxup,
             "procup": processup,
+            "version": version,
             "available": {
                 "temp": temp > -274,
                 "ram": ram[0] > 0,
@@ -101,7 +117,7 @@ class RaspberryPi(commands.Cog):
         embed = (
             discord.Embed(
                 title="Harunon Bot Status",
-                description=f"```Running on: {status['system']}```",
+                description=f"```Running on: {status['system']}\n{status['version']}```",
                 color=Haruno.COLOR,
             )
             .set_author(

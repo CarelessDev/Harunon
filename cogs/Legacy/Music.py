@@ -15,7 +15,7 @@ class MusicLegacy(commands.Cog):
         self.song = {}
 
     async def cog_command_error(self, ctx: commands.Context, error: commands.CommandError):
-        await ctx.send('An error occurred: {}'.format(str(error)))
+        await ctx.send("An error occurred: {}".format(str(error)))
 
     async def play_nexts_song(self, ctx):
         global Song_queue
@@ -32,12 +32,13 @@ class MusicLegacy(commands.Cog):
         else:
             return
 
-    @commands.command(name='join', aliases=['j'])
+    @commands.command(name="join", aliases=["j"])
     async def _join(self, ctx: commands.context, *, channel: discord.VoiceChannel = None):
         """Join user VC"""
         if not channel and not ctx.author.voice:
             raise VoiceError(
-                'You are neither connected to a voice channel nor specified a channel to join.')
+                "You are neither connected to a voice channel nor specified a channel to join."
+            )
 
         destination = channel or ctx.author.voice.channel
         if ctx.voice_client:
@@ -47,13 +48,13 @@ class MusicLegacy(commands.Cog):
             await destination.connect()
             await ctx.send(Haruno.Words.JOIN)
 
-    @commands.command(name="leave", aliases=['le'])
+    @commands.command(name="leave", aliases=["le"])
     async def _leave(self, ctx: commands.context):
         """leave vc"""
         await ctx.voice_client.disconnect()
         await ctx.send(Haruno.Words.LEAVE)
 
-    @commands.command(name="skip", aliases=['s'])
+    @commands.command(name="skip", aliases=["s"])
     async def _skip(self, ctx: commands.context):
         """skip current song"""
         if not ctx.voice_client.is_playing:
@@ -63,7 +64,7 @@ class MusicLegacy(commands.Cog):
         msg = await ctx.send(Haruno.Words.Skip.SUCCESS)
         await msg.add_reaction(Haruno.Emoji.SKIP)
 
-    @commands.command(name="pause", aliases=['pa'])
+    @commands.command(name="pause", aliases=["pa"])
     async def _pause(self, ctx: commands.context):
         """pause current song"""
         if not ctx.voice_client.is_playing:
@@ -72,14 +73,14 @@ class MusicLegacy(commands.Cog):
             ctx.voice_client.pause()
             await ctx.message.add_reaction(Haruno.Emoji.PAUSE_RESUME)
 
-    @commands.command(name="resume", aliases=['r'])
+    @commands.command(name="resume", aliases=["res"])
     async def _resume(self, ctx: commands.context):
         """resume"""
         if ctx.voice_client.is_paused():
             ctx.voice_client.resume()
             await ctx.message.add_reaction(Haruno.Emoji.PAUSE_RESUME)
 
-    @commands.command(name="queue", aliases=['q'])
+    @commands.command(name="queue", aliases=["q"])
     async def _queue(self, ctx: commands.context, page: int = 1):
         """Display list of songs"""
         global Song_queue
@@ -109,7 +110,7 @@ class MusicLegacy(commands.Cog):
 
         await ctx.send(embed=embed)
 
-    @commands.command(name="loop", aliases=['l'])
+    @commands.command(name="loop", aliases=["l"])
     async def _loop_queue(self, ctx: commands.context):
         """loop queue"""
         server_id = ctx.message.guild.id
@@ -124,7 +125,7 @@ class MusicLegacy(commands.Cog):
             msg = await ctx.send(Haruno.Words.Loop.OFF)
             await msg.add_reaction(Haruno.Emoji.Loop.OFF)
 
-    @commands.command(name="play", aliases=['p', 'lay'])
+    @commands.command(name="play", aliases=["p", "lay"])
     async def _play(self, ctx: commands.context, *, song: str):
         """play song, search or url"""
         global Song_queue
@@ -148,7 +149,7 @@ class MusicLegacy(commands.Cog):
             song = Song(source)
         await ctx.send(embed=song.create_embed(ctx.message.created_at, Haruno.Words.ENQUEUED))
 
-    @commands.command(name="remove", aliases=['re'])
+    @commands.command(name="remove", aliases=["rm"])
     async def _remove(self, ctx: commands.context, index: int = 1):
         global Song_queue
         if not ctx.author.voice:
@@ -164,12 +165,12 @@ class MusicLegacy(commands.Cog):
         else:
             return await ctx.send(Haruno.Words.Queue.EMPTY)
 
-    @commands.command(name="now", aliases=['n'])
+    @commands.command(name="now", aliases=["n"])
     async def _now(self, ctx: commands.Context):
         """show current song"""
         await ctx.send(embed=Song(ctx.voice_client.source).create_embed(ctx.message.created_at))
 
-    @commands.command(name="clear", aliases=['c'])
+    @commands.command(name="clear", aliases=["c"])
     async def _clear(self, ctx: commands.Context):
         """clear queue"""
         global Song_queue
