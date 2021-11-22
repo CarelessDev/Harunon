@@ -146,7 +146,7 @@ class MusicLegacy(commands.Cog):
                 ctx.voice_client.play(self.song[server_id], after=lambda e: asyncio.run(
                     self.play_nexts_song(ctx)))
             song = Song(source)
-        await ctx.send(embed=song.create_embed(Haruno.Words.ENQUEUED))
+        await ctx.send(embed=song.create_embed(ctx.message.created_at, Haruno.Words.ENQUEUED))
 
     @commands.command(name="remove", aliases=['re'])
     async def _remove(self, ctx: commands.context, index: int = 1):
@@ -167,7 +167,7 @@ class MusicLegacy(commands.Cog):
     @commands.command(name="now", aliases=['n'])
     async def _now(self, ctx: commands.Context):
         """show current song"""
-        await ctx.send(embed=Song(ctx.voice_client.source).create_embed())
+        await ctx.send(embed=Song(ctx.voice_client.source).create_embed(ctx.message.created_at))
 
     @commands.command(name="clear", aliases=['c'])
     async def _clear(self, ctx: commands.Context):

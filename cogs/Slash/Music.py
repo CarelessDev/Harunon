@@ -184,7 +184,7 @@ class MusicSlash(commands.Cog):
                 self.play_nexts_song(ctx)))
 
         song = Song(source)
-        await ctx.send(embed=song.create_embed(Haruno.Words.ENQUEUED))
+        await ctx.send(embed=song.create_embed(ctx.created_at, Haruno.Words.ENQUEUED))
 
     @cog_ext.cog_slash(
         name="remove", description="Remove Song from Queue", guild_ids=guild_ids,
@@ -214,7 +214,7 @@ class MusicSlash(commands.Cog):
 
     @cog_ext.cog_slash(name="now", description="Show Current Song", guild_ids=guild_ids)
     async def _now(self, ctx: commands.Context):
-        await ctx.send(embed=Song(ctx.voice_client.source).create_embed())
+        await ctx.send(embed=Song(ctx.voice_client.source).create_embed(ctx.created_at))
 
     @cog_ext.cog_slash(name="clear", description="Clear the Queue", guild_ids=guild_ids)
     async def _clear(self, ctx: commands.Context):

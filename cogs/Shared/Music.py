@@ -179,7 +179,7 @@ class Song:
         self.source = source
         self.requester = source.requester
 
-    def create_embed(self, words=Haruno.Words.NOW_PLAYING, created_at: datetime = datetime.utcnow()):
+    def create_embed(self, created_at: datetime,  words=Haruno.Words.NOW_PLAYING):
         interval = (datetime.utcnow() - created_at).total_seconds() * 1000
 
         embed = (
