@@ -10,6 +10,7 @@ from cogs.Legacy.Music import MusicLegacy
 from cogs.Slash.Haru import HaruSlash
 from cogs.Slash.Kashi import Kashi
 from cogs.Slash.Music import MusicSlash
+from cogs.Slash.RaspberryPi import RaspberryPi
 from utils.data import data
 
 if __name__ == "__main__":
@@ -28,6 +29,7 @@ if __name__ == "__main__":
     bot.add_cog(HaruSlash(bot))
     bot.add_cog(Kashi(bot))
     bot.add_cog(MusicSlash(bot))
+    bot.add_cog(RaspberryPi(bot))
 
     @bot.event
     async def on_ready():
