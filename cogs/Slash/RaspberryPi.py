@@ -13,7 +13,7 @@ class PiHelper:
             # * Check Raspberry Pi Temperature
             temp = check_output(["vcgencmd", "measure_temp"]).decode("utf-8")
             temp = temp.split("=")[1].split("'")[0]  # * By GitHub Copilot ✨✨
-            return int(temp)
+            return float(temp)
         except:
             return -274  # * Not on Raspberry Pi
 
