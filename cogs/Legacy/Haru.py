@@ -16,8 +16,6 @@ class Haru(commands.Cog):
     async def cog_command_error(self, ctx: commands.Context, error: commands.CommandError):
         await ctx.send("An error occurred: {}".format(str(error)))
 
-    def get_emoji(self, emoji_name: str):
-        return discord.utils.get(self.bot.emojis, name=emoji_name)
 
     @commands.command(name="ping")
     async def _ping(self, ctx: commands.Context):
@@ -65,10 +63,9 @@ class Haru(commands.Cog):
             emb.set_footer(text='18+ huh You disgusting fuck')
             emj = self.get_emoji("lady")
             
+            
 
-            await msg.edit(content=f'{emj} <https://reddit.com{link}> {emj}', embed = emb) 
-            await ctx.send(file = file )
-            await msg.add_reaction(emj)
+            await msg.edit(content=f'{emj} <https://reddit.com{link}> {emj}', embed = emb, file=file) 
             os.remove('SPOILER_img.jpg')
         
         else:
