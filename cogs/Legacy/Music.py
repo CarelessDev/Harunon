@@ -275,8 +275,7 @@ class MusicLegacy(commands.Cog):
             return await ctx.send(Haruno.Words.Queue.EMPTY)
         page = page
         items_per_page = 10
-        pages = math.ceil((len(Song_queue[server_id]) + 1)/ items_per_page)
-
+        pages = math.ceil((len(Song_queue[server_id]) + 1) / items_per_page)
 
         start = (page - 1) * items_per_page
         end = start + items_per_page
@@ -362,10 +361,5 @@ class MusicLegacy(commands.Cog):
         global Song_queue
         server_id = ctx.voice_client.server_id
         Song_queue[server_id] = []
-<<<<<<< HEAD
-        self.song[server_id] = None
-        msg = await ctx.send("Queue cleared! 成功!")
-=======
         msg = await ctx.send(Haruno.Words.Queue.CLEARED)
->>>>>>> 814bfef333a1c32161483c1991a48f21d489da4e
         await msg.add_reaction("✅")

@@ -32,7 +32,7 @@ class HaruSlash(commands.Cog):
         )
 
     @cog_ext.cog_slash(
-        name="clearmsg", description="Clear All Message", guild_ids=guild_ids,
+        name="kamui", description="Clear Messages to delete what you have done", guild_ids=guild_ids,
         options=[
             create_option(
                 name="clear_amount",

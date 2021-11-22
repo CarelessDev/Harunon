@@ -290,7 +290,7 @@ class MusicSlash(commands.Cog):
         action_row = create_actionrow(*buttons)
         page = 1
         items_per_page = 2
-        pages = math.ceil((len(Song_queue[server_id]) + 1 )/ items_per_page)
+        pages = math.ceil((len(Song_queue[server_id]) + 1) / items_per_page)
         once = True
 
         while True:
@@ -357,7 +357,7 @@ class MusicSlash(commands.Cog):
         server_id = ctx.voice_client.server_id
         self.loop = self.loop if self.loop else {guild_id: loop for (
             guild_id, loop) in [(i.id, False) for i in self.bot.guilds]}
-        
+
         await ctx.defer()
         source = await YTDLSource.create_source(ctx, song, loop=self.bot.loop)
         if server_id in Song_queue:
@@ -406,10 +406,6 @@ class MusicSlash(commands.Cog):
     async def _clear(self, ctx: commands.Context):
         server_id = ctx.voice_client.server_id
         Song_queue[server_id] = []
-<<<<<<< HEAD
         self.song[server_id] = None
-        msg = await ctx.send("Queue cleared! 成功!")
-=======
         msg = await ctx.send(Haruno.Words.Queue.CLEARED)
->>>>>>> 814bfef333a1c32161483c1991a48f21d489da4e
         await msg.add_reaction("✅")
