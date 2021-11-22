@@ -2,13 +2,15 @@ import discord
 from discord.ext import commands
 from discord_slash import cog_ext, SlashCommandOptionType as SOT
 from discord_slash.context import SlashContext
+from typing import List
+import constants.Haruno as Haruno
 
 from subprocess import check_output
 
 
 class PiHelper:
     @staticmethod
-    def _get_cpu_temp():
+    def _get_cpu_temp() -> float:
         try:
             # * Check Raspberry Pi Temperature
             temp = check_output(["vcgencmd", "measure_temp"]).decode("utf-8")
@@ -18,7 +20,7 @@ class PiHelper:
             return -274  # * Not on Raspberry Pi
 
     @staticmethod
-    def _get_ram_usage():
+    def _get_ram_usage() -> List[int]:
         try:
             ram = check_output(["free", "-m"]).decode("utf-8")
             ramUsed = ram.split("\n")[1].split()[2]
@@ -57,7 +59,8 @@ class RaspberryPi(commands.Cog):
         embed = (
             discord.Embed(
                 title="Harunon Bot Status",
-                description=f"Running on: {status['system']}",
+                description=f"```Running on: {status['system']}```",
+                color=Haruno.COLOR,
             )
             .set_author(
                 name=self.bot.user.name, icon_url=self.bot.user.avatar_url
