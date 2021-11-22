@@ -45,8 +45,13 @@ class HaruSlash(commands.Cog):
     )
     async def _cleara(self, ctx: SlashContext, clear_amount: str):
         await ctx.send("**ザ・ハンドが消す!!!**")
+
+        await ctx.defer()
         await asyncio.sleep(1)
         await ctx.channel.purge(limit=int(clear_amount) + 1)
+
+        await ctx.send("**ザ・ハンドが消した!!!**")
+        await ctx.channel.send("https://c.tenor.com/xexSk5SQBbAAAAAC/discord-mod.gif")
 
     @cog_ext.cog_slash(
         name="blep", description="No one have idea what command is this", guild_ids=guild_ids,
