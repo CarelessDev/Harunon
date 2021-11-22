@@ -171,13 +171,14 @@ class HaruSlash(commands.Cog):
             await ctx.channel.send(helix)
 
     @cog_ext.cog_slash(
-        name="gay", description="Insult someone for being gae", options=[
-            create_option(
-                name="person",
-                description="Who to insult",
-                required=False,
-                option_type=SOT.USER
-            )
+        name="gay", description="Insult someone for being gae", guild_ids=guild_ids,
+        options=[
+             create_option(
+                 name="person",
+                 description="Who to insult",
+                 required=False,
+                 option_type=SOT.USER
+             )
         ]
     )
     async def _gay(self, ctx: SlashContext, person: ClientUser = None):

@@ -4,6 +4,7 @@ from discord_slash import cog_ext, SlashCommandOptionType as SOT
 from discord_slash.context import SlashContext
 from typing import List
 import constants.Haruno as Haruno
+from utils.env import guild_ids
 
 from subprocess import check_output
 
@@ -52,7 +53,11 @@ class RaspberryPi(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @cog_ext.cog_slash(name="haruno", description="Asking Haruno if she is fine")
+    @cog_ext.cog_slash(
+        name="haruno",
+        description="Asking Haruno if she is fine",
+        guild_ids=guild_ids
+    )
     async def _haruno(self, ctx: SlashContext):
         status = PiHelper.get_status()
 
