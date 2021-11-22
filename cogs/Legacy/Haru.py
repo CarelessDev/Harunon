@@ -59,15 +59,12 @@ class HaruLegacy(commands.Cog):
         emb.set_author(name=ctx.message.author, icon_url=ctx.author.avatar_url)
 
         if random_sub.over_18:
-            img = Image.open(urlopen(url))
-            img.save("SPOILER_img.jpg")
-            file = discord.File("SPOILER_img.jpg", spoiler=True)
             emb.set_footer(text="18+ huh You disgusting fuck")
             emj = Haru.get_emoji(ctx, "lady")
 
-            await msg.edit(content=f"{emj} <https://reddit.com{link}> {emj}", embed=emb)
-            await ctx.channel.send(file=file)
-            os.remove("SPOILER_img.jpg")
+            await msg.edit(content=f"<https://reddit.com{link}>", embed=emb)
+            await ctx.channel.send(f"||{url}||")
+   
 
         else:
             await msg.edit(content=f"<https://reddit.com{link}> :white_check_mark:")
