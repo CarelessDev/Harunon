@@ -23,5 +23,5 @@ jobs:
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VERSION_SOURCE: COMMIT_COUNT
-          VERSION_MAJOR_MINOR: 1.0
+          VERSION_MAJOR_MINOR: "1.0"
           CHANGELOG_BODY: "# Harunon {VERSION} [{DATE}]"
