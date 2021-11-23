@@ -1,0 +1,25 @@
+name: Publish Release
+
+# * Trigger (Release new Version) on every 23:00 GMT +7
+on:
+  schedule:
+    - cron: 0 16 * *
+
+  workflow_dispatch:
+
+jobs:
+  main:
+    name: Publish Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Publish Release
+        uses: Leomotors/auto-publish-release@main
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION_SOURCE: COMMIT_COUNT
+          VERSION_MAJOR_MINOR: 1.0
+          CHANGELOG_BODY: "# Harunon {VERSION} [{DATE}]""
