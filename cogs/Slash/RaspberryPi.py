@@ -6,6 +6,7 @@ from typing import List
 
 from discord_slash.utils.manage_commands import create_option
 import constants.Haruno as Haruno
+from utils.slash import SlashUtils
 from utils.env import guild_ids
 from datetime import datetime
 
@@ -112,14 +113,7 @@ class RaspberryPi(commands.Cog):
         name="status",
         description="Asking Haruno if she is fine",
         guild_ids=guild_ids,
-        options=[
-            create_option(
-                name="ephemeral",
-                description="If status should be ephemeral",
-                option_type=SOT.BOOLEAN,
-                required=False,
-            )
-        ]
+        options=[SlashUtils.ephemeral()]
     )
     async def _haruno(self, ctx: SlashContext, ephemeral: bool = False):
         interval = (datetime.utcnow() - ctx.created_at).total_seconds() * 1000

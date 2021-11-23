@@ -10,6 +10,7 @@ from utils.helix import makeHelix
 from datetime import datetime
 from cogs.Shared.Haru import Haru
 import constants.Haruno as Haruno
+from utils.slash import SlashUtils
 
 
 class HaruSlash(commands.Cog):
@@ -23,11 +24,15 @@ class HaruSlash(commands.Cog):
         guilds = self.bot.guilds
         await ctx.send(str(guilds))
 
-    @cog_ext.cog_slash(name="ping", description="Ping Pong 遊ぼう!", guild_ids=guild_ids)
-    async def _ping(self, ctx: SlashContext):
+    @cog_ext.cog_slash(
+        name="ping", description="Ping Pong 遊ぼう!", guild_ids=guild_ids,
+        options=[SlashUtils.ephemeral()]
+    )
+    async def _ping(self, ctx: SlashContext, ephemeral: bool = False):
         interval = datetime.utcnow() - ctx.created_at
         await ctx.send(
-            f"Pong! Ping = {interval.total_seconds() * 1000} ms"
+            f"Pong! Ping = {interval.total_seconds() * 1000} ms",
+            hidden=ephemeral
         )
 
     @cog_ext.cog_slash(
@@ -88,11 +93,12 @@ class HaruSlash(commands.Cog):
                 choices=[
                     create_choice(value=x, name=x) for x in data["waifu_gif"].keys()
                 ]
-            )
+            ),
+            SlashUtils.ephemeral()
         ]
     )
-    async def _haruno(self, ctx: SlashContext, waifu_name: str):
-        await ctx.send(choice(data["waifu_gif"][waifu_name]))
+    async def _haruno(self, ctx: SlashContext, waifu_name: str, ephemeral: bool = False):
+        await ctx.send(choice(data["waifu_gif"][waifu_name]), hidden=ephemeral)
 
     @cog_ext.cog_slash(
         name="reddit", description="Reddit!", guild_ids=guild_ids,
