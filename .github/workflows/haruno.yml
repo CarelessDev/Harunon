@@ -5,7 +5,7 @@ name: Publish 'Harunon' Release
 # * Otherwise 'Error' and abort, lmao
 on:
   schedule:
-    - cron: 0 16 * *
+    - cron: 0 16 * * *
 
   workflow_dispatch:
 
