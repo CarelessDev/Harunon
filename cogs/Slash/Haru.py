@@ -6,7 +6,7 @@ import discord
 from random import choice
 from utils.env import guild_ids, reddit
 from utils.data import data
-from utils.helix import makeHelix
+from utils.helix import HelixError, makeHelix
 from datetime import datetime
 from cogs.Shared.Haru import Haru
 import constants.Haruno as Haruno
@@ -94,7 +94,7 @@ class HaruSlash(commands.Cog):
                     create_choice(value=x, name=x) for x in data["waifu_gif"].keys()
                 ]
             ),
-            SlashUtils.ephemeral()
+            SlashUtils.ephemeral("SIMP without anyone knowing")
         ]
     )
     async def _haruno(self, ctx: SlashContext, waifu_name: str, ephemeral: bool = False):
@@ -115,12 +115,7 @@ class HaruSlash(commands.Cog):
                 required=False,
                 option_type=SOT.STRING,
             ),
-            create_option(
-                name="ephemeral",
-                description="Hide your query to avoid being BONKed",
-                required=False,
-                option_type=SOT.BOOLEAN,
-            )
+            SlashUtils.ephemeral("Hide your query to avoid being BONKed")
         ]
     )
     async def _reddit(
@@ -129,7 +124,6 @@ class HaruSlash(commands.Cog):
         search_query: str = None,
         ephemeral: bool = False
     ):
-
         if ephemeral:
             await ctx.defer(True)
             msg = None
@@ -212,6 +206,15 @@ class HaruSlash(commands.Cog):
     )
     async def _helix(self, ctx: SlashContext, text: str):
         helixes = makeHelix(text)
+
+        if isinstance(helixes, int):
+            if helixes == HelixError.ILLEGAL_CHAR:
+                await ctx.send("Illegal String")
+            elif helixes == HelixError.TOO_LONG:
+                await ctx.send("Someone is trying to break me!")
+            else:
+                await ctx.send("\"Unknown Error, Blame Nathan\" — Leo")
+            return
 
         await ctx.send("HELIX JIKAN DE~SU!")
         for helix in helixes:

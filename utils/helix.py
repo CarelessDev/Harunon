@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Union
 from random import randint
 
 b = ":black_large_square:"
@@ -38,8 +38,20 @@ def text4(char):
     return t(char)+bp+t(char)
 
 
-def makeHelix(text: str) -> List[str]:
+class HelixError:
+    ILLEGAL_CHAR = 0
+    ILLEGAL_LEN = 1
+
+
+def makeHelix(text: str) -> Union[List[str], int]:
     text = text.lower().replace(" ", "")
+
+    # * Check if String contains only a-z and A-Z
+    if not text.isalpha():
+        return HelixError.ILLEGAL_CHAR
+
+    if len(text) > 100:
+        return HelixError.ILLEGAL_LEN
 
     lines = 1
     helix = text3(text[0])
