@@ -31,6 +31,9 @@ class Words:
         ON = "ループしま～す!"
         OFF = "ループしません"
 
+    class Reddit:
+        R18 = "変態 バカ ボケナス 八幡\nhttps://c.tenor.com/qEW8kRsAFV8AAAAC/you-hachiman-oregairu.gif"
+
 
 class Emoji:
     SKIP = "⏭"

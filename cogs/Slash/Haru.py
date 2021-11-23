@@ -108,15 +108,27 @@ class HaruSlash(commands.Cog):
                 description="Thing to look for",
                 required=False,
                 option_type=SOT.STRING,
+            ),
+            create_option(
+                name="ephemeral",
+                description="Hide your query to avoid being BONKed",
+                required=False,
+                option_type=SOT.BOOLEAN,
             )
         ]
     )
     async def _reddit(
         self, ctx: SlashContext,
         subreddit: str = "gochiusa",
-        search_query: str = None
+        search_query: str = None,
+        ephemeral: bool = False
     ):
-        msg = await ctx.send("待ってください ちょっとね...")
+
+        if ephemeral:
+            await ctx.defer(True)
+            msg = None
+        else:
+            msg = await ctx.send("待ってください ちょっとね...")
 
         if not search_query:
             if subreddit.lower() == "gochiusa":
@@ -138,32 +150,48 @@ class HaruSlash(commands.Cog):
             ups = random_sub.score
             link = random_sub.permalink
             comments = random_sub.num_comments
+            r18 = random_sub.over_18
 
             emb = discord.Embed(
-                title="どうぞ お姉さんからよ！",
+                title="どうぞ お姉さんからよ！" if not r18 else "⚠️⚠️ NSFW ⚠️⚠️",
                 description=f"```css\n{name}\n```", color=Haruno.COLOR
             )
             emb.set_author(
-                name=ctx.message.author,
+                name=ctx.author,
                 icon_url=ctx.author.avatar_url
-            )
-            emb.set_footer(
-                text=f"Upvote: {ups} Comments: {comments}・このハルノには夢がある ❄️"
             )
             emb.set_image(url=url)
 
-            if random_sub.over_18:
+            if r18 and not ephemeral:
                 await msg.edit(
-                    content="変態 バカ ボケナス 八幡\nhttps://c.tenor.com/qEW8kRsAFV8AAAAC/you-hachiman-oregairu.gif"
+                    content=Haruno.Words.Reddit.R18
                 )
 
             else:
-                await msg.edit(
-                    content=f"<https://reddit.com{link}> :white_check_mark:", embed=emb
-                )
+                if r18:
+                    emb.set_footer(text="BONK! GO TO HORNY JAIL!")
+                else:
+                    emb.set_footer(
+                        text=f"Upvote: {ups} Comments: {comments}・このハルノには夢がある ❄️"
+                    )
+
+                if ephemeral:
+                    await ctx.send(
+                        content=f"<https://reddit.com{link}> :white_check_mark:",
+                        embed=emb,
+                        hidden=True,
+                    )
+                else:
+                    await msg.edit(
+                        content=f"<https://reddit.com{link}> :white_check_mark:",
+                        embed=emb,
+                    )
 
         except Exception as e:
-            await msg.edit(content=f"ごめんね {e}")
+            if ephemeral:
+                await ctx.send(content=f"ごめんね {e}", hidden=True)
+            else:
+                await msg.edit(content=f"ごめんね {e}")
 
     @cog_ext.cog_slash(
         name="helix", description="Adenine Thymine Cytosine Guanine", guild_ids=guild_ids,

@@ -1,13 +1,32 @@
 import discord
 from discord.ext import commands
-from discord_slash import cog_ext
+from discord_slash import cog_ext, SlashCommandOptionType as SOT
 from discord_slash.context import SlashContext
 from typing import List
+
+from discord_slash.utils.manage_commands import create_option
 import constants.Haruno as Haruno
 from utils.env import guild_ids
 from datetime import datetime
 
 from subprocess import check_output
+
+
+def get_version() -> str:
+    try:
+        # * GitHub Copilot amazed me again ✨✨
+        chash = check_output(
+            ["git", "rev-parse", "HEAD"]).decode("utf-8")[:7]
+        ccount = int(check_output(
+            ["git", "rev-list", "--count", "HEAD"]).decode("utf-8").strip())
+        cbranch = check_output(
+            ["git", "rev-parse", "--abbrev-ref", "HEAD"]).decode("utf-8").strip()
+        return f"Version: {ccount} ({cbranch} @ {chash})"
+    except:
+        return "Version: UNKNOWN"
+
+
+VERSION: str = get_version()
 
 
 class PiHelper:
@@ -60,26 +79,11 @@ class PiHelper:
         # * By GitHub Copilot again ✨✨
 
     @staticmethod
-    def _get_version() -> str:
-        try:
-            # * GitHub Copilot amazed me again ✨✨
-            chash = check_output(
-                ["git", "rev-parse", "HEAD"]).decode("utf-8")[:7]
-            ccount = int(check_output(
-                ["git", "rev-list", "--count", "HEAD"]).decode("utf-8").strip())
-            cbranch = check_output(
-                ["git", "rev-parse", "--abbrev-ref", "HEAD"]).decode("utf-8").strip()
-            return f"Version: {ccount} ({cbranch} @ {chash})"
-        except:
-            return "Version: UNKNOWN"
-
-    @staticmethod
     def get_status():
         temp = PiHelper._get_cpu_temp()
         ram = PiHelper._get_ram_usage()
         linuxup = PiHelper._get_linux_uptime()
         processup = PiHelper._get_process_uptime()
-        version = PiHelper._get_version()
 
         return {
             "system": "Raspberry Pi" if temp > -274 else "Linux" if ram[0] > 0 else "Windows",
@@ -90,7 +94,7 @@ class PiHelper:
             },
             "linuxup": linuxup,
             "procup": processup,
-            "version": version,
+            "version": VERSION,
             "available": {
                 "temp": temp > -274,
                 "ram": ram[0] > 0,
@@ -107,9 +111,17 @@ class RaspberryPi(commands.Cog):
     @cog_ext.cog_slash(
         name="status",
         description="Asking Haruno if she is fine",
-        guild_ids=guild_ids
+        guild_ids=guild_ids,
+        options=[
+            create_option(
+                name="ephemeral",
+                description="If status should be ephemeral",
+                option_type=SOT.BOOLEAN,
+                required=False,
+            )
+        ]
     )
-    async def _haruno(self, ctx: SlashContext):
+    async def _haruno(self, ctx: SlashContext, ephemeral: bool = False):
         interval = (datetime.utcnow() - ctx.created_at).total_seconds() * 1000
 
         status = PiHelper.get_status()
@@ -149,4 +161,4 @@ class RaspberryPi(commands.Cog):
 
         # * GitHub Copilot Superior
 
-        await ctx.send("Yahallo!", embed=embed)
+        await ctx.send("Yahallo!", embed=embed, hidden=ephemeral)
