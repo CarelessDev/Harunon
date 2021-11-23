@@ -210,10 +210,8 @@ class HaruSlash(commands.Cog):
         if isinstance(helixes, int):
             if helixes == HelixError.ILLEGAL_CHAR:
                 await ctx.send("Illegal String")
-            elif helixes == HelixError.TOO_LONG:
+            elif helixes == HelixError.ILLEGAL_LEN:
                 await ctx.send("Someone is trying to break me!")
-            else:
-                await ctx.send("\"Unknown Error, Blame Nathan\" — Leo")
             return
 
         await ctx.send("HELIX JIKAN DE~SU!")

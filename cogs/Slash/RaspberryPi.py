@@ -22,7 +22,12 @@ def get_version() -> str:
             ["git", "rev-list", "--count", "HEAD"]).decode("utf-8").strip())
         cbranch = check_output(
             ["git", "rev-parse", "--abbrev-ref", "HEAD"]).decode("utf-8").strip()
-        return f"Version: {ccount} ({cbranch} @ {chash})"
+
+        # * Get Last Commit Time
+        ctime = check_output(
+            ["git", "log", "-1", "--format=%cd"]).decode("utf-8").strip()
+
+        return f"Version: {ccount} ({cbranch} @ {chash})\n{ctime}"
     except:
         return "Version: UNKNOWN"
 
