@@ -1,6 +1,8 @@
-name: Publish Release
+name: Publish 'Harunon' Release
 
-# * Trigger (Release new Version) on every 23:00 GMT +7
+# * Trigger (Release new Version) every 23:00 GMT +7
+# * Release new version if there is
+# * Otherwise 'Error' and abort, lmao
 on:
   schedule:
     - cron: 0 16 * *
@@ -22,4 +24,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VERSION_SOURCE: COMMIT_COUNT
           VERSION_MAJOR_MINOR: 1.0
-          CHANGELOG_BODY: "# Harunon {VERSION} [{DATE}]""
+          CHANGELOG_BODY: "# Harunon {VERSION} [{DATE}]"
