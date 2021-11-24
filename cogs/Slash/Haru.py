@@ -4,13 +4,15 @@ from discord_slash.utils.manage_commands import create_choice, create_option
 from discord.ext import commands
 import discord
 from random import choice
-from utils.env import guild_ids, reddit
+from utils.env import guild_ids, reddit, TENOR_APIKEY
 from utils.data import data
 from utils.helix import HelixError, makeHelix
 from datetime import datetime
 from cogs.Shared.Haru import Haru
 import constants.Haruno as Haruno
 from utils.slash import SlashUtils
+import requests
+import json
 
 
 class HaruSlash(commands.Cog):
@@ -83,22 +85,31 @@ class HaruSlash(commands.Cog):
         await ctx.send(str(Haru.get_emoji(ctx, emoji_name)))
 
     @cog_ext.cog_slash(
-        name="simp", description="SIMP: Super Idol de xiao rong", guild_ids=guild_ids,
+        name="simp",
+        description="A Good Way to SIMP (Powered by Tenor)",
+        guild_ids=guild_ids,
         options=[
             create_option(
                 name="waifu_name",
                 description="Who to SIMP",
                 required=True,
                 option_type=SOT.STRING,
-                choices=[
-                    create_choice(value=x, name=x) for x in data["waifu_gif"].keys()
-                ]
             ),
             SlashUtils.ephemeral("SIMP without anyone knowing")
         ]
     )
-    async def _haruno(self, ctx: SlashContext, waifu_name: str, ephemeral: bool = False):
-        await ctx.send(choice(data["waifu_gif"][waifu_name]), hidden=ephemeral)
+    async def _simp(self, ctx: SlashContext, waifu_name: str, ephemeral: bool = False):
+        res = requests.get(
+            f"https://g.tenor.com/v1/search?q={waifu_name}&key={TENOR_APIKEY}&limit=30"
+        )
+
+        if res.status_code == 200:
+            gifs = json.loads(res.content)
+            gif = choice(gifs["results"])
+            # * GitHub Copilot helped me again — Yukino didn't say
+            await ctx.send(gif["media"][0]["gif"]["url"], hidden=ephemeral)
+        else:
+            await ctx.send(f"Error : {res.status_code} {res.content['error']}", hidden=True)
 
     @cog_ext.cog_slash(
         name="reddit", description="Reddit!", guild_ids=guild_ids,

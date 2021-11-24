@@ -3,11 +3,7 @@ from datetime import datetime
 from utils.env import reddit
 import discord
 from random import choice
-from urllib.request import urlopen
-import os
-from PIL import Image
 import constants.Haruno as Haruno
-from cogs.Shared.Haru import Haru
 
 
 class HaruLegacy(commands.Cog):
@@ -60,11 +56,9 @@ class HaruLegacy(commands.Cog):
 
         if random_sub.over_18:
             emb.set_footer(text="18+ huh You disgusting fuck")
-            emj = Haru.get_emoji(ctx, "lady")
 
             await msg.edit(content=f"<https://reddit.com{link}>", embed=emb)
             await ctx.channel.send(f"|| {url} ||")
-   
 
         else:
             await msg.edit(content=f"<https://reddit.com{link}> :white_check_mark:")

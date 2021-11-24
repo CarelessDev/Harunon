@@ -4,7 +4,6 @@ from discord_slash import cog_ext, SlashCommandOptionType as SOT
 from discord_slash.context import SlashContext
 from typing import List
 
-from discord_slash.utils.manage_commands import create_option
 import constants.Haruno as Haruno
 from utils.slash import SlashUtils
 from utils.env import guild_ids

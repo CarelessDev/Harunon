@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 import asyncpraw
 load_dotenv()
 
+TOKEN = os.getenv("DISCORD_TOKEN")
 
 guild_ids = [int(id) for id in os.getenv("guild_ids").split(",")]
 
@@ -13,3 +14,5 @@ reddit = asyncpraw.Reddit(
     password=os.getenv("password"),
     user_agent=os.getenv("user_agent")
 )
+
+TENOR_APIKEY = os.getenv("TENOR_APIKEY")
