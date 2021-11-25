@@ -140,10 +140,13 @@ class RaspberryPi(commands.Cog):
 
         status = PiHelper.get_status()
 
+        need_update = (
+            "\n" + PiHelper.NEED_UPDATE) if status["need_update"] else ""
+
         embed = (
             discord.Embed(
                 title="Harunon Bot Status",
-                description=f"```Running on: {status['system']}\n{status['version']}{'\n' + RaspberryPi.NEED_UPDATE if status['need_update'] else ''}```",
+                description=f"```Running on: {status['system']}\n{status['version']}{need_update}```",
                 color=Haruno.COLOR,
             )
             .set_author(
