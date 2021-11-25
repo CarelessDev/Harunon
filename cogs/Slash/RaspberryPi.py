@@ -35,6 +35,8 @@ VERSION: str = get_version()
 
 
 class PiHelper:
+    has_done_pull_action = False
+
     @staticmethod
     def _get_cpu_temp() -> float:
         try:
@@ -84,6 +86,17 @@ class PiHelper:
         # * By GitHub Copilot again ✨✨
 
     @staticmethod
+    def _check_for_updates() -> bool:
+        # * git: Check if there is something to pull
+        try:
+            if len(check_output(["git", "pull"]).decode("utf-8")) > 25:
+                PiHelper.has_done_pull_action = True
+        except:
+            pass
+
+        return PiHelper.has_done_pull_action
+
+    @staticmethod
     def get_status():
         temp = PiHelper._get_cpu_temp()
         ram = PiHelper._get_ram_usage()
@@ -106,12 +119,15 @@ class PiHelper:
                 "linuxup": linuxup is not None,
                 "processup": True,
             },
+            "need_update": PiHelper._check_for_updates(),
         }
 
 
 class RaspberryPi(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+
+    NEED_UPDATE = "✨✨ New Version of Bot is Available! ✨✨"
 
     @cog_ext.cog_slash(
         name="status",
@@ -127,7 +143,7 @@ class RaspberryPi(commands.Cog):
         embed = (
             discord.Embed(
                 title="Harunon Bot Status",
-                description=f"```Running on: {status['system']}\n{status['version']}```",
+                description=f"```Running on: {status['system']}\n{status['version']}{'\n' + RaspberryPi.NEED_UPDATE if status['need_update'] else ''}```",
                 color=Haruno.COLOR,
             )
             .set_author(
