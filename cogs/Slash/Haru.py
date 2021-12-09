@@ -4,12 +4,15 @@ from discord_slash.utils.manage_commands import create_choice, create_option
 from discord.ext import commands
 import discord
 from random import choice
-from utils.env import guild_ids, reddit
+from utils.env import guild_ids, reddit, TENOR_APIKEY
 from utils.data import data
-from utils.helix import makeHelix
+from utils.helix import HelixError, makeHelix
 from datetime import datetime
 from cogs.Shared.Haru import Haru
 import constants.Haruno as Haruno
+from utils.slash import SlashUtils
+import requests
+import json
 
 
 class HaruSlash(commands.Cog):
@@ -23,11 +26,15 @@ class HaruSlash(commands.Cog):
         guilds = self.bot.guilds
         await ctx.send(str(guilds))
 
-    @cog_ext.cog_slash(name="ping", description="Ping Pong 遊ぼう!", guild_ids=guild_ids)
-    async def _ping(self, ctx: SlashContext):
+    @cog_ext.cog_slash(
+        name="ping", description="Ping Pong 遊ぼう!", guild_ids=guild_ids,
+        options=[SlashUtils.ephemeral()]
+    )
+    async def _ping(self, ctx: SlashContext, ephemeral: bool = False):
         interval = datetime.utcnow() - ctx.created_at
         await ctx.send(
-            f"Pong! Ping = {interval.total_seconds() * 1000} ms"
+            f"Pong! Ping = {interval.total_seconds() * 1000} ms",
+            hidden=ephemeral
         )
 
     @cog_ext.cog_slash(
@@ -78,21 +85,31 @@ class HaruSlash(commands.Cog):
         await ctx.send(str(Haru.get_emoji(ctx, emoji_name)))
 
     @cog_ext.cog_slash(
-        name="simp", description="SIMP: Super Idol de xiao rong", guild_ids=guild_ids,
+        name="simp",
+        description="A Good Way to SIMP (Powered by Tenor)",
+        guild_ids=guild_ids,
         options=[
             create_option(
                 name="waifu_name",
                 description="Who to SIMP",
                 required=True,
                 option_type=SOT.STRING,
-                choices=[
-                    create_choice(value=x, name=x) for x in data["waifu_gif"].keys()
-                ]
-            )
+            ),
+            SlashUtils.ephemeral("SIMP without anyone knowing")
         ]
     )
-    async def _haruno(self, ctx: SlashContext, waifu_name: str):
-        await ctx.send(choice(data["waifu_gif"][waifu_name]))
+    async def _simp(self, ctx: SlashContext, waifu_name: str, ephemeral: bool = False):
+        res = requests.get(
+            f"https://g.tenor.com/v1/search?q={waifu_name}&key={TENOR_APIKEY}&limit=30"
+        )
+
+        if res.status_code == 200:
+            gifs = json.loads(res.content)
+            gif = choice(gifs["results"])
+            # * GitHub Copilot helped me again — Yukino didn't say
+            await ctx.send(gif["media"][0]["gif"]["url"], hidden=ephemeral)
+        else:
+            await ctx.send(f"Error : {res.status_code} {res.content['error']}", hidden=True)
 
     @cog_ext.cog_slash(
         name="reddit", description="Reddit!", guild_ids=guild_ids,
@@ -108,15 +125,21 @@ class HaruSlash(commands.Cog):
                 description="Thing to look for",
                 required=False,
                 option_type=SOT.STRING,
-            )
+            ),
+            SlashUtils.ephemeral("Hide your query to avoid being BONKed")
         ]
     )
     async def _reddit(
         self, ctx: SlashContext,
         subreddit: str = "gochiusa",
-        search_query: str = None
+        search_query: str = None,
+        ephemeral: bool = False
     ):
-        msg = await ctx.send("待ってください ちょっとね...")
+        if ephemeral:
+            await ctx.defer(True)
+            msg = None
+        else:
+            msg = await ctx.send("待ってください ちょっとね...")
 
         if not search_query:
             if subreddit.lower() == "gochiusa":
@@ -138,32 +161,48 @@ class HaruSlash(commands.Cog):
             ups = random_sub.score
             link = random_sub.permalink
             comments = random_sub.num_comments
+            r18 = random_sub.over_18
 
             emb = discord.Embed(
-                title="どうぞ お姉さんからよ！",
+                title="どうぞ お姉さんからよ！" if not r18 else "⚠️⚠️ NSFW ⚠️⚠️",
                 description=f"```css\n{name}\n```", color=Haruno.COLOR
             )
             emb.set_author(
-                name=ctx.message.author,
+                name=ctx.author,
                 icon_url=ctx.author.avatar_url
-            )
-            emb.set_footer(
-                text=f"Upvote: {ups} Comments: {comments}・このハルノには夢がある ❄️"
             )
             emb.set_image(url=url)
 
-            if random_sub.over_18:
+            if r18 and not ephemeral:
                 await msg.edit(
-                    content="変態 バカ ボケナス 八幡\nhttps://c.tenor.com/qEW8kRsAFV8AAAAC/you-hachiman-oregairu.gif"
+                    content=Haruno.Words.Reddit.R18
                 )
 
             else:
-                await msg.edit(
-                    content=f"<https://reddit.com{link}> :white_check_mark:", embed=emb
-                )
+                if r18:
+                    emb.set_footer(text="BONK! GO TO HORNY JAIL!")
+                else:
+                    emb.set_footer(
+                        text=f"Upvote: {ups} Comments: {comments}・このハルノには夢がある ❄️"
+                    )
+
+                if ephemeral:
+                    await ctx.send(
+                        content=f"<https://reddit.com{link}> :white_check_mark:",
+                        embed=emb,
+                        hidden=True,
+                    )
+                else:
+                    await msg.edit(
+                        content=f"<https://reddit.com{link}> :white_check_mark:",
+                        embed=emb,
+                    )
 
         except Exception as e:
-            await msg.edit(content=f"ごめんね {e}")
+            if ephemeral:
+                await ctx.send(content=f"ごめんね {e}", hidden=True)
+            else:
+                await msg.edit(content=f"ごめんね {e}")
 
     @cog_ext.cog_slash(
         name="helix", description="Adenine Thymine Cytosine Guanine", guild_ids=guild_ids,
@@ -178,6 +217,13 @@ class HaruSlash(commands.Cog):
     )
     async def _helix(self, ctx: SlashContext, text: str):
         helixes = makeHelix(text)
+
+        if isinstance(helixes, int):
+            if helixes == HelixError.ILLEGAL_CHAR:
+                await ctx.send("Illegal String")
+            elif helixes == HelixError.ILLEGAL_LEN:
+                await ctx.send("Someone is trying to break me!")
+            return
 
         await ctx.send("HELIX JIKAN DE~SU!")
         for helix in helixes:

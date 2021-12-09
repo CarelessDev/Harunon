@@ -14,12 +14,9 @@ from cogs.Slash.RaspberryPi import RaspberryPi
 from utils.data import data
 from datetime import datetime
 import constants.Haruno as Haruno
+from utils.env import TOKEN
 
 if __name__ == "__main__":
-    load_dotenv()
-
-    TOKEN = os.getenv("DISCORD_TOKEN")
-
     bot = commands.Bot(command_prefix="simp")
     slash = SlashCommand(bot, sync_commands=True)
 
