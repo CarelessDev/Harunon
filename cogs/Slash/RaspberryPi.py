@@ -141,7 +141,7 @@ class RaspberryPi(commands.Cog):
         status = PiHelper.get_status()
 
         need_update = (
-            "\n" + PiHelper.NEED_UPDATE) if status["need_update"] else ""
+            "\n" + RaspberryPi.NEED_UPDATE) if status["need_update"] else ""
 
         embed = (
             discord.Embed(
