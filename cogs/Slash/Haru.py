@@ -245,3 +245,18 @@ class HaruSlash(commands.Cog):
             await ctx.send(f"<@!{ctx.author_id}> is gay!")
 
         await ctx.send(f"{person.mention} is gay!")
+
+    @cog_ext.cog_slash(
+        name="impostor", description="Use Harunon to speak anything", guild_ids=guild_ids,
+        options=[
+            create_option(
+                name="message",
+                description="Message for Harunon to Speak",
+                required=True,
+                option_type=SOT.STRING
+            )
+        ],
+    )
+    async def _impostor(self, ctx: SlashContext, message: str):
+        await ctx.send("サープライス成功!", hidden=True)
+        await ctx.channel.send(message)
