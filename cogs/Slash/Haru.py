@@ -258,5 +258,5 @@ class HaruSlash(commands.Cog):
         ],
     )
     async def _impostor(self, ctx: SlashContext, message: str):
-        await ctx.send("サープライス成功!", hidden=True)
+        await ctx.send("サプライズ成功!", hidden=True)
         await ctx.channel.send(message)
