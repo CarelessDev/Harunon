@@ -1,6 +1,6 @@
 from discord_slash import SlashContext, cog_ext, ComponentContext
 from discord_slash.utils.manage_commands import create_option
-from discord_slash.utils.manage_components import create_actionrow, create_button, wait_for_component
+from discord_slash.utils.manage_components import create_actionrow, create_button, create_select_option, wait_for_component, create_select
 from discord_slash.model import ButtonStyle
 import discord
 from discord.ext import commands
@@ -10,6 +10,7 @@ from utils.env import guild_ids
 from cogs.Shared.Music import Song_queue
 import constants.Haruno as Haruno
 from cogs.Shared.Music import Song, YTDLSource, VoiceError
+from youtube_search import YoutubeSearch
 
 
 class MusicSlash(commands.Cog):
@@ -158,7 +159,7 @@ class MusicSlash(commands.Cog):
             )
         ]
     )
-    async def _play(self, ctx: SlashContext, *, song: str):
+    async def _play(self, ctx: SlashContext,  song: str):
         global Song_queue
 
         await ctx.invoke(self._join)
@@ -181,6 +182,44 @@ class MusicSlash(commands.Cog):
 
         song = Song(source)
         await ctx.send(embed=song.create_embed(ctx.created_at, Haruno.Words.ENQUEUED))
+
+    @cog_ext.cog_slash(
+        name="search", description="Search for Music", guild_ids=guild_ids,
+        options=[
+            create_option(
+                name="song",
+                description="Search Query",
+                required=True,
+                option_type=3
+            )
+        ]
+    )
+    async def _search(self, ctx: SlashContext,  song: str):
+        await ctx.defer()
+
+        results = YoutubeSearch(song, max_results=10).to_dict()
+        text = ""
+        for i, song in enumerate(results):
+            text += f"`{i + 1}.` [**{song['title']} - {song['channel']} ({song['duration']})**](https://www.youtube.com/{song['url_suffix']})\n"
+
+        embed = discord.Embed(
+            description=f"**{len(results)} Results:**\n\n{text}", color=Haruno.COLOR
+        ).set_footer(text="このハルノには夢がある ❄️")
+        select = create_select(
+            options=[
+                create_select_option(
+                    f"{song['title']} - {song['channel']}", value=song['url_suffix'], emoji="❄️"
+                ) for song in results],
+            placeholder="song",
+            min_values=1,
+            max_values=1,
+        )
+
+        msg = await ctx.send(embed=embed, components=[create_actionrow(select)])
+
+        button_ctx: ComponentContext = await wait_for_component(self.bot, components=[select])
+        url = f"https://www.youtube.com{button_ctx.selected_options[0]}"
+        await ctx.invoke(self._play, song=url)
 
     @cog_ext.cog_slash(
         name="remove", description="Remove Song from Queue", guild_ids=guild_ids,
