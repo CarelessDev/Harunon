@@ -158,7 +158,7 @@ class MusicSlash(commands.Cog):
             )
         ]
     )
-    async def _play(self, ctx: SlashContext, *, song: str):
+    async def _play(self, ctx: SlashContext, song: str):
         global Song_queue
 
         await ctx.invoke(self._join)
@@ -181,6 +181,31 @@ class MusicSlash(commands.Cog):
 
         song = Song(source)
         await ctx.send(embed=song.create_embed(ctx.created_at, Haruno.Words.ENQUEUED))
+
+    @cog_ext.cog_slash(
+        name="search", description="Search for musics", guild_ids=guild_ids,
+        options=[
+            create_option(
+                name="song",
+                description="Search Query",
+                required=True,
+                option_type=3
+            )
+        ]
+    )
+    async def _search(self, ctx: SlashContext, song: str):
+        await ctx.defer()
+        musics = await YTDLSource.search_music(ctx, song, loop=self.bot.loop)
+        text = ""
+        for i, music in enumerate(musics["entries"]):
+            text += f"`{i+1}.` [**{music['title']}**]({music['url']})\n"
+
+        await ctx.send(
+            embed=discord.Embed(
+                description=f"**{len(musics['entries'])} Results:**\n\n{text}",
+                color=Haruno.COLOR
+            )
+        )
 
     @cog_ext.cog_slash(
         name="remove", description="Remove Song from Queue", guild_ids=guild_ids,

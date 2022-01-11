@@ -111,7 +111,7 @@ class YTDLSource(discord.PCMVolumeTransformer):
         return "**{0.title}** by **{0.uploader}**".format(self)
 
     @classmethod
-    async def create_source(cls, ctx, search: str, *, loop: asyncio.BaseEventLoop = None):
+    async def search_music(cls, ctx, search: str, *, loop: asyncio.BaseEventLoop = None):
         loop = loop or asyncio.get_event_loop()
 
         # search algorithm
@@ -146,6 +146,12 @@ class YTDLSource(discord.PCMVolumeTransformer):
         if processed_info is None:
             raise YTDLError("Couldn't fetch `{}`".format(webpage_url))
 
+        return processed_info
+
+    @classmethod
+    async def create_source(cls, ctx, search: str, *, loop: asyncio.BaseEventLoop = None):
+        processed_info = await cls.search_music(ctx, search, loop=loop)
+
         if "entries" not in processed_info:
             info = processed_info
         else:
@@ -155,7 +161,7 @@ class YTDLSource(discord.PCMVolumeTransformer):
                     info = processed_info["entries"].pop(0)
                 except IndexError:
                     raise YTDLError(
-                        "Couldn't retrieve any matches for `{}`".format(webpage_url))
+                        "Couldn't retrieve any matches for `{}`".format(search))
 
         return cls(ctx, discord.FFmpegPCMAudio(info["url"], **cls.FFMPEG_OPTIONS), data=info)
 
