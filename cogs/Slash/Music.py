@@ -212,7 +212,7 @@ class MusicSlash(commands.Cog):
                 ) for song in results],
             placeholder="song",
             min_values=1,
-            max_values=10,
+            max_values=1,
         )
 
         msg = await ctx.send(embed=embed, components=[create_actionrow(select)])
