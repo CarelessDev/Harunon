@@ -1,5 +1,7 @@
 # 雪ノ下陽乃
 
+❗Discontinued, Version 3 [Here](https://github.com/CarelessDev/harunon.js)
+
 "陽乃ベストお姉さん" — said CarelessDev/oneesan-lover
 
 ![](https://c.tenor.com/ceojyowWu0oAAAAC/haruno-yukinoshita-oregairu.gif)
